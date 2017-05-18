@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/mrllama123/nwen304-project3-team-sweet/issues"
   },
-  "homepage": "https://github.com/mrllama123/nwen304-project3-team-sweet#readme"
+  "homepage": "https://github.com/mrllama123/nwen304-project3-team-sweet#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "pg": "^6.2.2"
+  }
 }
