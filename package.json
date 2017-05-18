@@ -1,0 +1,19 @@
+{
+  "name": "nwen304-project3-team-sweet",
+  "version": "1.0.0",
+  "description": "our amazing shopping app",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrllama123/nwen304-project3-team-sweet.git"
+  },
+  "author": "team sweet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrllama123/nwen304-project3-team-sweet/issues"
+  },
+  "homepage": "https://github.com/mrllama123/nwen304-project3-team-sweet#readme"
+}
