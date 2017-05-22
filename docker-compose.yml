@@ -7,5 +7,4 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_DB=shopping
-      - POSTGRES_USER=bob
-      - POSTGRES_PASSWORD=1qazmonty2wsx
+      - POSTGRES_USER=root
