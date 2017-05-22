@@ -1,0 +1,11 @@
+version: "2"
+
+services:
+  db:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=shopping
+      - POSTGRES_USER=bob
+      - POSTGRES_PASSWORD=1qazmonty2wsx
