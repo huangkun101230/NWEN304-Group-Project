@@ -41,7 +41,7 @@ body {
   background-color: white;
   width:1024px;
   height:768px;
-  border: #00B7FF 2px dashed ;
+  /*border: #00B7FF 2px dashed ;*/
   margin: 0 auto;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
@@ -49,15 +49,20 @@ body {
 h1{
   font-weight: normal;
   font-size: 2em;
-  margin-bottom: .9em;
+  margin-bottom: 0.9em;
+}
+h3{
+  font-weight: normal;
+  font-size: 1.5em;
+  margin-bottom: 0.7em;
 }
 
 /*top banner starts*/
 #banner{
-  padding-top: 1em;
+  padding-top: 2em;
   width: 100%;
   /*margin: 0 auto;*/
-  border: crimson 2px dashed;
+  /*border: crimson 2px dashed;*/
   float: left;
 }
 #banner h1{
@@ -98,7 +103,7 @@ h1{
 }
 
 #nav li.right{
-  border: chartreuse 2px dashed;
+  /*border: chartreuse 2px dashed;*/
   float: right;
 }
 /* navigation ends*/
@@ -131,7 +136,41 @@ Search box ends
 #content{
   border: #cccccc 1px solid;
   border-radius: 4px;
-  margin: 14px 16px;
+  /*margin: 14px 16px;*/
+  margin-top: 14px;
   float: left;
 }
+#content h3{
+  margin-top: 14px;
+  margin-left: 16px;
+}
+/*-----------products list layout starts-------------*/
+#content .products_list{
+  list-style: none;
+  margin-top: 30px;
+  /*border: chartreuse 1px dashed;*/
+  display: inline-block;
+  vertical-align: top;
+}
+#content .products_list img{
+  width: 200px;
+  float: left;
+}
+#content .products_list p {
+  width: 500px;
+  float: left;
+  padding: 25px;
+  /*border: chartreuse 1px dashed;*/
+
+}
+#content .products_list span {
+  height: 20px;
+  border: crimson 2px solid;
+  float: left;
+  position: absolute;
+  margin: 80px;
+  /*padding: 25px;*/
+}
+/*-----------products list layout ends-------------*/
+
 /*content layout ends*/
