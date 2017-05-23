@@ -35,7 +35,6 @@ blockquote:before, blockquote:after,
 q:before, q:after {
   content: '';
   content: none; }
-
 /* end reset browser styles */
 
 body {
@@ -53,20 +52,33 @@ h1{
   margin-bottom: .9em;
 }
 
+/*top banner starts*/
 #banner{
   padding-top: 1em;
   width: 100%;
-  margin: 0 auto;
+  /*margin: 0 auto;*/
   border: crimson 2px dashed;
+  float: left;
 }
-/* navgation starts*/
+#banner h1{
+  float: left;
+}
+#banner span{
+  float: right;
+  margin: 15px 30px;
+}
+/*top banner ends*/
+
+/* navigation starts*/
 #nav {
   list-style-type: none;
+  width: 1024px;
   margin: 0;
   padding: 0;
   overflow: hidden;
   border: 1px solid #e7e7e7;
   background-color: #f3f3f3;
+  float: left;
 }
 
 #nav li {
@@ -85,4 +97,41 @@ h1{
   background-color: #ddd;
 }
 
-/* navgation ends*/
+#nav li.right{
+  border: chartreuse 2px dashed;
+  float: right;
+}
+/* navigation ends*/
+
+/*
+Search box starts
+*/
+#nav li.right a{
+  float: right;
+}
+#nav li.right input{
+  padding: 14px 16px;
+  float: right;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: white;
+  background-image: url("../img/search_icon.png");
+  background-size: 25px;
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  padding: 12px 20px 12px 40px;
+}
+/*
+Search box ends
+*/
+
+/*content layout starts*/
+#content{
+  border: #cccccc 1px solid;
+  border-radius: 4px;
+  margin: 14px 16px;
+  float: left;
+}
+/*content layout ends*/
