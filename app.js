@@ -4,6 +4,12 @@ var port = process.env.PORT || 8080;
 var path = require("path");
 var connectionString = process.env.DATABASE_URL || "postgres://root@localhost:5432/shopping";
 var pg = require('pg');
+var session = require('express-session');
+//app.use(express.urlencoded());
+app.use(session({
+  secret: 'ssshhhhh',
+  cookie: { secure: true }
+}));
 
 var client = new pg.Client(connectionString);
 client.connect(function(err, client, done) {
@@ -40,13 +46,7 @@ var fs = require('fs');
 app.use(require('./routes/index'));
 
 
-app.get('/', function (req, res) {
-	//res.sendFile(  path.join(__dirname,'project1-part1-template','project1'));
-});
-
-
 app.listen(port, function () {
 	console.log('Example app listening on port 8080!');
 });
 
-module.exports(connectionString);

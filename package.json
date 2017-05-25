@@ -18,8 +18,12 @@
   },
   "homepage": "https://github.com/mrllama123/nwen304-project3-team-sweet#readme",
   "dependencies": {
+    "app-root-path": "^2.0.1",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
+    "express-session": "^1.15.3",
+    "install": "^0.10.1",
+    "npm": "^4.6.1",
     "pg": "^6.2.2"
   }
 }
