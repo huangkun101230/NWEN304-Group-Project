@@ -49,4 +49,4 @@ app.use(require('./routes/index'));
 app.listen(port, function () {
 	console.log('Example app listening on port 8080!');
 });
-
+module.exports = app;

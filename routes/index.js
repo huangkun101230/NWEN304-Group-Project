@@ -8,10 +8,12 @@ var jsonParser = bodyParser.json()
 var path = require("path");
 var appRoot = require('app-root-path');
 var client = require(appRoot+"/config/database.js");
+var app = require(appRoot+'/app.js');
+var ssn ;
 
 function loginCheck(user,pass){
   var login = [];
-  var query = client.query("select exists(select (username,password) from users where username=$1 and password=$2)",[data.user,data.pass], 
+  var query = client.query("select exists(select (username,password) from users where username=$1 and password=$2)",[user,pass], 
   function(err, result) {
       if (err) {
         throw err;
@@ -26,7 +28,7 @@ function loginCheck(user,pass){
     //res.json(login);
     login = JSON.stringify(login);
     login = JSON.parse(login)[0].exists
-    console.log(login);
+    //console.log(login);
   });
 
   if (login) {
@@ -39,7 +41,9 @@ function loginCheck(user,pass){
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
+  ssn = req.session;
+  ssn.user;
+  ssn.pass; 
 });
 
 //registers a new user into database for the user_cart and users tables 
@@ -73,8 +77,12 @@ router.get('/login',jsonParser,function(req, res, next){
   if (data === null || data.user === null || data.pass === null) {
      return res.status(500).json({success: false, data: "empty username or password"});
   }
+  ssn = req.session;
+  ssn.user = data.user;
+  ssn.pass = data.pass;
 
-  if (loginCheck(data.user,data.pass)) {
+  if (loginCheck(ssn.user,ssn.pass)) {
+    
     res.redirect('/')
   } else {
     res.status(200).json({success: false, data: "wrong username or password"});
@@ -82,6 +90,42 @@ router.get('/login',jsonParser,function(req, res, next){
   
 
 });
+
+router.get('/logout',jsonParser,function(req, res, next){
+  req.session.destroy(function(err){
+    if(err){
+      throw err;
+    } else{
+      res.redirect('/');
+    }
+  });
+
+});
+
+router.get('/user',jsonParser,function(req, res, next) {
+  var user = ssn.user;
+  if(user == null){
+    res.status(500).json({success: false, data: "not logged on"});
+  }
+  var query = client.query("SELECT * FROM users WHERE username=$1",[user], 
+  function(err, result) {
+      if (err) {
+        throw err;
+      }
+  });
+
+  var user = [];
+  query.on('row', function(row) {
+    user.push(row);
+  });
+  // After all data is returned, close connection and return results
+  query.on('end', function() {
+    if (user.length == 0) {
+      res.status(500).json({success: false, data: "could not find user"});
+    }
+    res.json(user);
+  });
+})
 
 
 module.exports = router;
