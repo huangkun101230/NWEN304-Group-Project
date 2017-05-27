@@ -62,13 +62,14 @@ router.post('/register',jsonParser,function(req, res, next){
       }
       id = result.rows[0].user_id;
   });
-
+  /*
   client.query("INSERT INTO user_cart (user_id) VALUES ($1);",[id], 
   function(err, result) {
       if (err) {
         throw err;
       }
   });
+  */
   return res.status(200).json({success: true, data: "successfully added user"});
 });
 
