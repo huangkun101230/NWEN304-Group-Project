@@ -103,6 +103,7 @@ router.get('/logout',jsonParser,function(req, res, next){
 
 });
 
+// gets the row which has information about the user e.g username, password and whats in the users cart
 router.get('/user',jsonParser,function(req, res, next) {
   var user = ssn.user;
   if(user == null){
@@ -127,6 +128,17 @@ router.get('/user',jsonParser,function(req, res, next) {
     res.json(user);
   });
 })
+
+//adds items to the cart of a particular user 
+router.get('/addtocart',jsonParser,function(res,req,next){
+  var user = ssn.user;
+  if(user == null){
+    res.status(500).json({success: false, data: "not logged on"});
+  }
+  
+
+});
+
 
 
 module.exports = router;
