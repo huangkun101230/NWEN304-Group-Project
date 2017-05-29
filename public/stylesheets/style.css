@@ -141,13 +141,13 @@ Search box ends
   float: left;
 }
 #content h3{
-  margin-top: 14px;
+  margin-top: 25px;
   margin-left: 16px;
 }
 /*-----------products list layout starts-------------*/
 #content .products_list{
   list-style: none;
-  margin-top: 30px;
+  margin-top: 20px;
   /*border: chartreuse 1px dashed;*/
   display: inline-block;
   vertical-align: top;
@@ -156,14 +156,19 @@ Search box ends
   width: 200px;
   float: left;
 }
-#content .products_list p {
+/*#content .products_list h2{*/
+  /*!*float: left;*!*/
+  /*margin-top: 14px;*/
+  /*margin-left: 25px;*/
+/*}*/
+#content .products_list span.products_des {
   width: 500px;
   float: left;
   padding: 25px;
   /*border: chartreuse 1px dashed;*/
 
 }
-#content .products_list span {
+#content .products_list span.add_cart {
   height: 20px;
   border: crimson 2px solid;
   float: left;
