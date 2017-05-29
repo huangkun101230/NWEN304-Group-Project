@@ -1,18 +1,17 @@
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 8080;
-var path = require("path");
 var faker = require('faker');
 var session = require('express-session');
 var appRoot = require('app-root-path');
 require(appRoot+"/database/db-init.js");
-var sleep = require('sleep');
-sleep.sleep(10); // its a hack to wait for the db to start 
 
 //app.use(express.urlencoded());
 var secret = process.env.SESSION_SECRET || "ssshhhhh"
 app.use(session({
   secret: secret,
+  resave: false,
+  saveUninitialized: false,
   cookie: { secure: true }
 }));
 
