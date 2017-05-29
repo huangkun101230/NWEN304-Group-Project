@@ -8,3 +8,18 @@ services:
     environment:
       - POSTGRES_DB=shopping
       - POSTGRES_USER=root
+  web:
+    image: node:7-slim
+    working_dir: /code
+    volumes: 
+      - .:/code
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "db"
+    links: 
+      - "db"
+    command: npm start
+    environment: 
+      - DATABASE_URL=postgres://root@db:5432/shopping
+
