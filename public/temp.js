@@ -1,18 +1,6 @@
 $(document).ready(function(e) {
 
-    // example products data
-    var data = '{"products:['
-                +'{"product_name": "yeezy", "product_des":"The adidas Yeezy 350 Boost is a low-top sneaker designed by Kanye West.' +
-        'The shoes first debuted at the YEEZY Season fashion show in February 2015 and new colorways were unveiled during YEEZY Season 3 on February 11th, 2016.", ' +
-        '"product_price":"200", "img_dir":"img/img/products_img/yeezy_350.jpg"}'
-                +'{"product_name": "yeezy 2", "product_des":"The adidas Yeezy 350 Boost is a low-top sneaker designed by Kanye West.' +
-        'The shoes first debuted at the YEEZY Season fashion show in February 2015 and new colorways were unveiled during YEEZY Season 3 on February 11th, 2016.", ' +
-        '"product_price":"300", "img_dir":"img/img/products_img/yeezy_350.jpg"}'
-                +'{"product_name": "yeezy 3", "product_des":"The adidas Yeezy 350 Boost is a low-top sneaker designed by Kanye West.' +
-        'The shoes first debuted at the YEEZY Season fashion show in February 2015 and new colorways were unveiled during YEEZY Season 3 on February 11th, 2016.", ' +
-        '"product_price":"400", "img_dir":"img/img/products_img/yeezy_350.jpg"}]"}';
-
-
+    var url_add = 'http://localhost:8080';
 // the nav "shop" is clicked
     $('#shop').click(function () {
         console.log("display products");
@@ -24,7 +12,7 @@ $(document).ready(function(e) {
     function loadProducts(){
         $display_content = $('#display_content');
         $.ajax({
-            url:'/products',//may change this later for the according the serverside
+            url: url_add+'/products',//may change this later for the according the serverside
             type:'GET',
             dataType: 'json',
             success: function (products) {
@@ -43,12 +31,98 @@ $(document).ready(function(e) {
                 });
             },
             error: function (error) {
-                console.log("Unable to load products from database");
+                console.log("Unsuccessful to load products from database");
             }
         });
     }
 
+    $('#register').click(function () {
+        console.log("display register form");
 
+        $content = $('#content');
+        $content.empty();
+        $content.append(
+            '<div id="register_form">'+
+            '<form>'+
+            '<label for="user_name"><h2>User name:</h2></label>'+
+            '<input id="user_name" type="text" name="user_name"/>'+
+            '<label for="password"><h2>Password:</h2></label>'+
+            '<input id="password" type="text" name="password"/>'+
+            '<button name="submit" id="submit">Submit</button>'+
+            '<button name="cancel" id="cancel">Cancel</button>'+
+            '</form>'+
+            '<span class="response_msg"></span>'+
+            '</div>'
+        );
+    });
+
+    $('#content').on('click', '#submit', function () {
+        console.log("submit the register form...")
+        var user = $('#user_name').val();
+        var password = $('#password').val();
+        if(user === '' || password === ''){
+            $('.response_msg').append('<p>please enter user name/password...</p> ');
+        }
+        else{
+            $.ajax({
+                url: url_add+'/register',
+                type: 'POST',
+                dataType: 'json',
+                data:{user: user, pass:password},
+                success: function (response) {
+                    console.log("successfully add a new user!--"+response);
+                    $('.response_msg').append('<p>Successfully registered! '+user+', welcome!</p> ');
+
+                },
+                error: function(error){
+                    console.log("Unsuccessful to add user"+error);
+                }
+            });
+        }
+
+    });
+
+
+    $('#login').click(function () {
+        console.log("display register form");
+
+        $content = $('#content');
+        $content.empty();
+        $content.append(
+            '<div id="login_form">'+
+            '<form>'+
+            '<label for="user_name"><h2>User name:</h2></label>'+
+            '<input id="user_name" type="text" name="user_name"/>'+
+            '<label for="password"><h2>Password:</h2></label>'+
+            '<input id="password" type="text" name="password"/>'+
+            '<button name="login" id="login">Login</button>'+
+            '<button name="register_link" id="register_link">Register</button>'+
+            '</form>'+
+            '<span class="response_msg"></span>'+
+            '</div>'
+        );
+    });
+
+    $('#content').on('click', '#login', function () {
+        var username = $('#user_name').val();
+        var password = $('#password').val();
+        $.ajax({
+            url: url_add+'/login',
+            type: 'Get',
+            dataType: 'json',
+            success: function (user) {
+                console.log("successfully logged in");
+                if(user.user === username && user.pass === password){
+                    $('#login h2').text('Log out');
+                    $('#x_logout a').attr('id', 'log_out');
+                }
+
+            },
+            error: function(error){
+                console.log("Unsuccessful to log-in");
+            }
+        });
+    });
 
 
 });//ends

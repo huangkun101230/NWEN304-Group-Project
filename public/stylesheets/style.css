@@ -57,6 +57,10 @@ h3{
   margin-bottom: 0.7em;
 }
 
+.response_msg{
+  color: crimson;
+}
+
 /*top banner starts*/
 #banner{
   padding-top: 2em;
@@ -178,5 +182,20 @@ Search box ends
   /*padding: 25px;*/
 }
 /*-----------products list layout ends-------------*/
+
+/*-----------register form layout starts-------------*/
+#content #register_form, #content #login_form{
+  margin: 20px auto;
+  border: #666666 2px solid;
+  border-radius: 4px;
+  width: 15%;
+  padding: 20px;
+}
+#content #register_form button, #content #login_form button{
+  /*float: left;*/
+  padding: 5px;
+  margin: 10px;
+}
+/*-----------register form layout ends-------------*/
 
 /*content layout ends*/
