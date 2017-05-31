@@ -1,10 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser')
-// create application/json parser
+
 var jsonParser = bodyParser.json()
-//var connectionString = process.env.DATABASE_URL || "postgres://root@localhost:5432/shopping";
-//var pg = require('pg');
 var path = require("path");
 var appRoot = require('app-root-path');
 var client = require(appRoot+"/config/database.js");
@@ -62,14 +60,14 @@ router.post('/register',jsonParser,function(req, res, next){
       }
       id = result.rows[0].user_id;
   });
-  /*
-  client.query("INSERT INTO user_cart (user_id) VALUES ($1);",[id], 
+  var cartQuery = "CREATE TABLE IF NOT EXISTS  "+data.user+"_cart (id SERIAL  PRIMARY KEY NOT NULL, product_id BIGINT , amount  BIGINT)"
+  client.query(cartQuery, 
   function(err, result) {
       if (err) {
         throw err;
       }
   });
-  */
+  
   return res.status(200).json({success: true, data: "successfully added user"});
 });
 
@@ -107,7 +105,7 @@ router.get('/logout',jsonParser,function(req, res, next){
 router.get('/user',jsonParser,function(req, res, next) {
   var user = ssn.user;
   if(user == null){
-    res.status(500).json({success: false, data: "not logged on"});
+    return res.status(500).json({success: false, data: "not logged on"});
   }
   var query = client.query("SELECT * FROM users WHERE username=$1",[user], 
   function(err, result) {
@@ -124,18 +122,118 @@ router.get('/user',jsonParser,function(req, res, next) {
   query.on('end', function() {
     if (user.length == 0) {
       res.status(500).json({success: false, data: "could not find user"});
+    }else {
+      res.json(user);
     }
-    res.json(user);
   });
 })
 
 //adds items to the cart of a particular user 
-router.get('/addtocart',jsonParser,function(res,req,next){
+router.put('/addtocart',jsonParser,function(res,req,next){
   var user = ssn.user;
   if(user == null){
-    res.status(500).json({success: false, data: "not logged on"});
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(res.body.prodId == null || res.body.amount == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
   }
-  
+  var data = res.body;
+  client.query("UPDATE users SET cart = cart || '{$1} WHERE username=$3",[data.prodId,user], 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      res.status(200).json({success: true,data: "updated cart"});
+  });
+});
+
+//changes amount of certain product in cart
+router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
+  var user = ssn.user;
+  if(user == null){
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(res.body.prodId == null || req.params.id == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
+  }
+  var data = res.body;
+  client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      res.status(200).json({success: true,data: "updated cart"});
+  });  
+});
+
+router.get('/user/cart/:id',function(res,req,next){
+  var user = ssn.user;
+  if(user == null){
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(req.params.id == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
+  }
+  var query = client.query("SELECT * FROM "+user+"_cart WHERE product_id=$2",[req.params.id], 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      
+  }); 
+  var user = [];
+  query.on('row', function(row) {
+    user.push(row);
+  });
+  // After all data is returned, close connection and return results
+  query.on('end', function() {
+    if (user.length == 0) {
+      res.status(500).json({success: false, data: "could not find product"});
+    }else {
+      res.json(user);
+    }
+  });
+
+});
+
+router.get('/user/cart',function(res,req,next){
+  var user = ssn.user;
+  if(user == null){
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(req.params.id == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
+  }
+  var query = client.query("SELECT * FROM "+user+"_cart ", 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      
+  }); 
+
+  var user = [];
+  query.on('row', function(row) {
+    user.push(row);
+  });
+  // After all data is returned, close connection and return results
+  query.on('end', function() {
+    res.json(user);
+  });
+
+});
+
+router.delete('user/cart/delete/:id',function(res,req,next) {
+  var user = ssn.user;
+  var item = req.params.id
+  if(user == null){
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(item == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
+  }
+  client.query("DELETE FROM "+user+"_cart where product_id=$1",[item], 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      res.status(200).json({success: true,data: "updated cart"});
+  });
 
 });
 
