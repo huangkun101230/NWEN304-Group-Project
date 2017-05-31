@@ -1,8 +1,201 @@
+/* reset browser styles */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline; }
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block; }
+
 body {
-  padding: 50px;
+  line-height: 1.2;
+  background-color: rgba(240,245,250, .8);}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+ol {
+  padding-left: 1.4em;
+  list-style: decimal; }
+
+ul {
+  padding-left: 1.4em;
+  list-style: square; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none; }
+/* end reset browser styles */
+
+body {
+  background-color: white;
+  width:1024px;
+  height:768px;
+  /*border: #00B7FF 2px dashed ;*/
+  margin: 0 auto;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
+h1{
+  font-weight: normal;
+  font-size: 2em;
+  margin-bottom: 0.9em;
 }
+h3{
+  font-weight: normal;
+  font-size: 1.5em;
+  margin-bottom: 0.7em;
+}
+
+.response_msg{
+  color: crimson;
+}
+
+/*top banner starts*/
+#banner{
+  padding-top: 2em;
+  width: 100%;
+  /*margin: 0 auto;*/
+  /*border: crimson 2px dashed;*/
+  float: left;
+}
+#banner h1{
+  float: left;
+}
+#banner span{
+  float: right;
+  margin: 15px 30px;
+}
+/*top banner ends*/
+
+/* navigation starts*/
+#nav {
+  list-style-type: none;
+  width: 1024px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  background-color: #f3f3f3;
+  float: left;
+}
+
+#nav li {
+  float: left;
+}
+
+#nav li a {
+  display: block;
+  color: #666;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+#nav li a:hover{
+  background-color: #ddd;
+}
+
+#nav li.right{
+  /*border: chartreuse 2px dashed;*/
+  float: right;
+}
+/* navigation ends*/
+
+/*
+Search box starts
+*/
+#nav li.right a{
+  float: right;
+}
+#nav li.right input{
+  padding: 14px 16px;
+  float: right;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: white;
+  background-image: url("../img/search_icon.png");
+  background-size: 25px;
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  padding: 12px 20px 12px 40px;
+}
+/*
+Search box ends
+*/
+
+/*content layout starts*/
+#content{
+  width: 1024px;
+  border: #cccccc 1px solid;
+  border-radius: 4px;
+  /*margin: 14px 16px;*/
+  margin-top: 14px;
+  float: left;
+}
+#content h3{
+  margin-top: 25px;
+  margin-left: 16px;
+}
+/*-----------products list layout starts-------------*/
+#content .products_list{
+  list-style: none;
+  margin-top: 20px;
+  /*border: chartreuse 1px dashed;*/
+  display: inline-block;
+  vertical-align: top;
+}
+#content .products_list img{
+  width: 200px;
+  float: left;
+}
+/*#content .products_list h2{*/
+  /*!*float: left;*!*/
+  /*margin-top: 14px;*/
+  /*margin-left: 25px;*/
+/*}*/
+#content .products_list span.products_des {
+  width: 500px;
+  float: left;
+  padding: 25px;
+  /*border: chartreuse 1px dashed;*/
+
+}
+#content .products_list span.add_cart {
+  height: 20px;
+  border: crimson 2px solid;
+  float: left;
+  position: absolute;
+  margin: 80px;
+  /*padding: 25px;*/
+}
+/*-----------products list layout ends-------------*/
+
+/*-----------register form layout starts-------------*/
+#content #register_form, #content #login_form{
+  margin: 20px auto;
+  border: #666666 2px solid;
+  border-radius: 4px;
+  width: 15%;
+  padding: 20px;
+}
+#content #register_form button, #content #login_form button{
+  /*float: left;*/
+  padding: 5px;
+  margin: 10px;
+}
+/*-----------register form layout ends-------------*/
+
+/*content layout ends*/
