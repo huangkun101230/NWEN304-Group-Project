@@ -1,0 +1,128 @@
+$(document).ready(function(e) {
+
+    var url_add = 'http://localhost:8080';
+// the nav "shop" is clicked
+    $('#shop').click(function () {
+        console.log("display products");
+        $('#display_content').empty();
+        loadProducts();
+
+    });
+// load the products info from data and display
+    function loadProducts(){
+        $display_content = $('#display_content');
+        $.ajax({
+            url: url_add+'/products',//may change this later for the according the serverside
+            type:'GET',
+            dataType: 'json',
+            success: function (products) {
+                $.each(products, function (i, product) {
+                    $display_content.append(
+                        '<li class="products_list">'+
+                            '<img src="'+product.picture_dir+'" alt="'+product.product_name+'">'+
+                            '<span class="products_des">'+
+                                '<h2>'+product.product_name+'</h2>'+
+                                '<p>'+product.product_des+'</p>'+
+                                '<p>&#36; '+product.price+'</p>'+
+                            '</span>'+
+                            '<span class="add_cart"><a>Add to cart</a></span>' +
+                        '</li>'
+                    );
+                });
+            },
+            error: function (error) {
+                console.log("Unsuccessful to load products from database");
+            }
+        });
+    }
+
+    $('#register').click(function () {
+        console.log("display register form");
+
+        $content = $('#content');
+        $content.empty();
+        $content.append(
+            '<div id="register_form">'+
+            '<form>'+
+            '<label for="user_name"><h2>User name:</h2></label>'+
+            '<input id="user_name" type="text" name="user_name"/>'+
+            '<label for="password"><h2>Password:</h2></label>'+
+            '<input id="password" type="text" name="password"/>'+
+            '<button name="submit" id="submit">Submit</button>'+
+            '<button name="cancel" id="cancel">Cancel</button>'+
+            '</form>'+
+            '<span class="response_msg"></span>'+
+            '</div>'
+        );
+    });
+
+    $('#content').on('click', '#submit', function () {
+        console.log("submit the register form...")
+        var user = $('#user_name').val();
+        var password = $('#password').val();
+        if(user === '' || password === ''){
+            $('.response_msg').append('<p>please enter user name/password...</p> ');
+        }
+        else{
+            $.ajax({
+                url: url_add+'/register',
+                type: 'POST',
+                dataType: 'json',
+                data:{user: user, pass:password},
+                success: function (response) {
+                    console.log("successfully add a new user!--"+response);
+                    $('.response_msg').append('<p>Successfully registered! '+user+', welcome!</p> ');
+
+                },
+                error: function(error){
+                    console.log("Unsuccessful to add user"+error);
+                }
+            });
+        }
+
+    });
+
+
+    $('#login').click(function () {
+        console.log("display register form");
+
+        $content = $('#content');
+        $content.empty();
+        $content.append(
+            '<div id="login_form">'+
+            '<form>'+
+            '<label for="user_name"><h2>User name:</h2></label>'+
+            '<input id="user_name" type="text" name="user_name"/>'+
+            '<label for="password"><h2>Password:</h2></label>'+
+            '<input id="password" type="text" name="password"/>'+
+            '<button name="login" id="login">Login</button>'+
+            '<button name="register_link" id="register_link">Register</button>'+
+            '</form>'+
+            '<span class="response_msg"></span>'+
+            '</div>'
+        );
+    });
+
+    $('#content').on('click', '#login', function () {
+        var username = $('#user_name').val();
+        var password = $('#password').val();
+        $.ajax({
+            url: url_add+'/login',
+            type: 'Get',
+            dataType: 'json',
+            success: function (user) {
+                console.log("successfully logged in");
+                if(user.user === username && user.pass === password){
+                    $('#login h2').text('Log out');
+                    $('#x_logout a').attr('id', 'log_out');
+                }
+
+            },
+            error: function(error){
+                console.log("Unsuccessful to log-in");
+            }
+        });
+    });
+
+
+});//ends
