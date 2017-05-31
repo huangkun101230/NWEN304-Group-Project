@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="bd4b46f8-6384-4860-b904-61418567d8c6" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/index.html" afterPath="$PROJECT_DIR$/public/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/style.css" afterPath="$PROJECT_DIR$/public/stylesheets/style.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/temp.js" afterPath="$PROJECT_DIR$/public/temp.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -20,7 +17,7 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/index.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="29">
@@ -30,7 +27,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="temp.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="temp.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/temp.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="517">
@@ -256,12 +253,12 @@
       <updated>1495451266036</updated>
       <workItem from="1495451267582" duration="6384000" />
       <workItem from="1495500283884" duration="7173000" />
-      <workItem from="1496062046502" duration="15429000" />
+      <workItem from="1496062046502" duration="15542000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28986000" />
+    <option name="totallyTimeSpent" value="29099000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -417,6 +414,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/public/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="29">
+          <caret line="29" column="32" lean-forward="false" selection-start-line="29" selection-start-column="24" selection-end-line="29" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/public/temp.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="517">
@@ -424,14 +429,6 @@
           <folding>
             <marker date="1496158133000" expanded="true" signature="1072:1077" ph="..." />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="29">
-          <caret line="29" column="32" lean-forward="false" selection-start-line="29" selection-start-column="24" selection-end-line="29" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
