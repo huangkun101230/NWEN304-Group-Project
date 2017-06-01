@@ -6,7 +6,6 @@ var jsonParser = bodyParser.json()
 var path = require("path");
 var appRoot = require('app-root-path');
 var client = require(appRoot+"/config/database.js");
-var app = require(appRoot+'/app.js');
 var ssn ;
 
 function loginCheck(user,pass){
@@ -50,9 +49,13 @@ router.post('/register',jsonParser,function(req, res, next){
   var data = req.body
   if (data == null || data.user == null || data.pass == null) {
     return res.status(500).json({success: false, data: "empty username or password"});
+  } else {
+    next();
   }
-  var id;
 
+},function(req,res,next){
+  var id;
+  var data = req.body
   client.query("INSERT INTO users (username,password) VALUES ($1,$2) RETURNING user_id;",[data.user,data.pass], 
   function(err, result) {
       if (err) {
@@ -70,6 +73,8 @@ router.post('/register',jsonParser,function(req, res, next){
   
   return res.status(200).json({success: true, data: "successfully added user"});
 });
+
+
 
 router.get('/login',jsonParser,function(req, res, next){
   var data = req.body
@@ -93,7 +98,7 @@ router.get('/login',jsonParser,function(req, res, next){
 router.get('/logout',jsonParser,function(req, res, next){
   req.session.destroy(function(err){
     if(err){
-      throw err;
+       next(err);
     } else{
       res.redirect('/');
     }
@@ -106,7 +111,11 @@ router.get('/user',jsonParser,function(req, res, next) {
   var user = ssn.user;
   if(user == null){
     return res.status(500).json({success: false, data: "not logged on"});
+  } else {
+    next();
   }
+},function(req,res,next){
+  var user = ssn.user;
   var query = client.query("SELECT * FROM users WHERE username=$1",[user], 
   function(err, result) {
       if (err) {
@@ -126,7 +135,7 @@ router.get('/user',jsonParser,function(req, res, next) {
       res.json(user);
     }
   });
-})
+});
 
 //adds items to the cart of a particular user 
 router.put('/addtocart',jsonParser,function(res,req,next){
@@ -153,7 +162,13 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(res.body.prodId == null || req.params.id == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
+  } else {
+    next();
   }
+
+
+},function (res,req,next) {
+  var user = ssn.user;
   var data = res.body;
   client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
   function(err, result) {
@@ -170,7 +185,12 @@ router.get('/user/cart/:id',function(res,req,next){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(req.params.id == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
+  } else {
+    next();
   }
+
+},function(res,req,next){
+  var user = ssn.user;
   var query = client.query("SELECT * FROM "+user+"_cart WHERE product_id=$2",[req.params.id], 
   function(err, result) {
       if (err) {
@@ -182,15 +202,14 @@ router.get('/user/cart/:id',function(res,req,next){
   query.on('row', function(row) {
     user.push(row);
   });
-  // After all data is returned, close connection and return results
+  // After all data is returned, return results
   query.on('end', function() {
     if (user.length == 0) {
       res.status(500).json({success: false, data: "could not find product"});
     }else {
       res.json(user);
     }
-  });
-
+  });  
 });
 
 router.get('/user/cart',function(res,req,next){
@@ -199,7 +218,11 @@ router.get('/user/cart',function(res,req,next){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(req.params.id == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
+  } else {
+    next();
   }
+},function(req,res,next){
+  var user = ssn.user;
   var query = client.query("SELECT * FROM "+user+"_cart ", 
   function(err, result) {
       if (err) {
@@ -216,7 +239,6 @@ router.get('/user/cart',function(res,req,next){
   query.on('end', function() {
     res.json(user);
   });
-
 });
 
 router.delete('user/cart/delete/:id',function(res,req,next) {
@@ -227,14 +249,20 @@ router.delete('user/cart/delete/:id',function(res,req,next) {
   } else if(item == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
   }
+
+
+},function(res,req,next){
+  var user = ssn.user;
+  var item = req.params.id
   client.query("DELETE FROM "+user+"_cart where product_id=$1",[item], 
   function(err, result) {
       if (err) {
         return res.status(500).json({success: false,data: err});
+      } else {
+        res.status(200).json({success: true,data: "updated cart"});
       }
-      res.status(200).json({success: true,data: "updated cart"});
+      
   });
-
 });
 
 
