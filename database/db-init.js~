@@ -16,7 +16,7 @@ function(err, result) {
     }
 });
 */
-client.query("CREATE TABLE IF NOT EXISTS  products (product_id  SERIAL PRIMARY KEY NOT NULL, product_name TEXT NOT NULL, product_des TEXT NOT NULL,price TEXT,in_stock INTEGER, picture_dir TEXT);", 
+client.query("CREATE TABLE IF NOT EXISTS  products (products_id  SERIAL PRIMARY KEY NOT NULL, product_name TEXT NOT NULL, product_des TEXT NOT NULL,price TEXT,in_stock INTEGER, picture_dir TEXT);", 
 function(err, result) {
     if (err) {
       throw err;

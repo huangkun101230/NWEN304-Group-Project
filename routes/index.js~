@@ -28,7 +28,7 @@ router.get('/',function(req,res){
 });
 
 //GET from product table
-router.get('/test_database',function(req,res){
+router.get('/test_database/',jsonParser,function(req,res,next){
   //SQL Query>Select Data
   var results = [];
 
