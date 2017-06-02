@@ -78,7 +78,6 @@ router.post('/register',jsonParser,function(req, res, next){
 
 router.post('/login',jsonParser,function(req, res, next){
   var data = req.body
-  console.log(Object.keys(data).length )
   if (Object.keys(data).length == 0) {
      return res.status(500).json({success: false, data: "empty username or password"});
   } else {
