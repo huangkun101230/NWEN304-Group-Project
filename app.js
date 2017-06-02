@@ -5,7 +5,7 @@ var faker = require('faker');
 var session = require('express-session');
 var appRoot = require('app-root-path');
 require(appRoot+"/database/db-init.js");
-
+app.use(express.static(appRoot+'/public'));
 //app.use(express.urlencoded());
 var secret = process.env.SESSION_SECRET || "ssshhhhh"
 app.use(session({
