@@ -9,7 +9,7 @@ function(err, result) {
     }
 });
 /*
-client.query("CREATE TABLE IF NOT EXISTS  user_cart (id SERIAL  PRIMARY KEY NOT NULL, user_id BIGINT , items TEXT ARRAY)", 
+client.query("CREATE TABLE IF NOT EXISTS  user_cart (id SERIAL  PRIMARY KEY NOT NULL, user_id BIGINT , items BIGINT[])", 
 function(err, result) {
     if (err) {
       throw err;

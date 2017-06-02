@@ -1,16 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser')
-// create application/json parser
+
 var jsonParser = bodyParser.json()
-//var connectionString = process.env.DATABASE_URL || "postgres://root@localhost:5432/shopping";
-//var pg = require('pg');
 var path = require("path");
 var appRoot = require('app-root-path');
 var client = require(appRoot+"/config/database.js");
-var app = require(appRoot+'/app.js');
-var ssn ;
-
+var config  = require(appRoot+"/config/auth");
+var ssn = config.session;
 function loginCheck(user,pass){
   var login = [];
   var query = client.query("select exists(select (username,password) from users where username=$1 and password=$2)",[user,pass], 
@@ -52,9 +49,13 @@ router.post('/register',jsonParser,function(req, res, next){
   var data = req.body
   if (data == null || data.user == null || data.pass == null) {
     return res.status(500).json({success: false, data: "empty username or password"});
+  } else {
+    next();
   }
-  var id;
 
+},function(req,res,next){
+  var id;
+  var data = req.body
   client.query("INSERT INTO users (username,password) VALUES ($1,$2) RETURNING user_id;",[data.user,data.pass], 
   function(err, result) {
       if (err) {
@@ -62,32 +63,38 @@ router.post('/register',jsonParser,function(req, res, next){
       }
       id = result.rows[0].user_id;
   });
-  /*
-  client.query("INSERT INTO user_cart (user_id) VALUES ($1);",[id], 
+  var cartQuery = "CREATE TABLE IF NOT EXISTS  "+data.user+"_cart (id SERIAL  PRIMARY KEY NOT NULL, product_id BIGINT , amount  BIGINT)"
+  client.query(cartQuery, 
   function(err, result) {
       if (err) {
         throw err;
       }
   });
-  */
+  
   return res.status(200).json({success: true, data: "successfully added user"});
 });
 
-router.get('/login',jsonParser,function(req, res, next){
-  var data = req.body
-  if (data === null || data.user === null || data.pass === null) {
-     return res.status(500).json({success: false, data: "empty username or password"});
-  }
-  ssn = req.session;
-  ssn.user = data.user;
-  ssn.pass = data.pass;
 
-  if (loginCheck(ssn.user,ssn.pass)) {
-    
-    res.redirect('/')
+
+router.post('/login',jsonParser,function(req, res, next){
+  var data = req.body
+  console.log(Object.keys(data).length )
+  if (Object.keys(data).length == 0) {
+     return res.status(500).json({success: false, data: "empty username or password"});
   } else {
-    res.status(200).json({success: false, data: "wrong username or password"});
-  }  
+    ssn = req.session;
+    ssn.user = data.user;
+    ssn.pass = data.pass;
+
+    if (loginCheck(ssn.user,ssn.pass)) {
+      
+      //res.redirect('/')
+      res.status(200).json({success: true, data: "yes"})
+    } else {
+      res.status(500).json({success: false, data: "wrong username or password"});
+    }
+  }
+    
   
 
 });
@@ -95,9 +102,9 @@ router.get('/login',jsonParser,function(req, res, next){
 router.get('/logout',jsonParser,function(req, res, next){
   req.session.destroy(function(err){
     if(err){
-      throw err;
+       next(err);
     } else{
-      res.redirect('/');
+      res.status(200).json({success: true, data: "yes"})
     }
   });
 
@@ -107,8 +114,12 @@ router.get('/logout',jsonParser,function(req, res, next){
 router.get('/user',jsonParser,function(req, res, next) {
   var user = ssn.user;
   if(user == null){
-    res.status(500).json({success: false, data: "not logged on"});
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else {
+    next();
   }
+},function(req,res,next){
+  var user = ssn.user;
   var query = client.query("SELECT * FROM users WHERE username=$1",[user], 
   function(err, result) {
       if (err) {
@@ -124,19 +135,154 @@ router.get('/user',jsonParser,function(req, res, next) {
   query.on('end', function() {
     if (user.length == 0) {
       res.status(500).json({success: false, data: "could not find user"});
+    }else {
+      res.json(user);
     }
-    res.json(user);
   });
-})
+});
 
 //adds items to the cart of a particular user 
-router.get('/addtocart',jsonParser,function(res,req,next){
+router.put('/addtocart',jsonParser,function(res,req,next){
   var user = ssn.user;
   if(user == null){
-    res.status(500).json({success: false, data: "not logged on"});
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(res.body.prodId == null || res.body.amount == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
   }
-  
+  var data = res.body;
+  client.query("UPDATE users SET cart = cart || '{$1} WHERE username=$3",[data.prodId,user], 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      res.status(200).json({success: true,data: "updated cart"});
+  });
+});
 
+//changes amount of certain product in cart
+router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
+  var user = ssn.user;
+  if(user == null){
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(res.body.prodId == null || req.params.id == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
+  } else {
+    next();
+  }
+
+
+},function (res,req,next) {
+  var user = ssn.user;
+  var data = res.body;
+  client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      res.status(200).json({success: true,data: "updated cart"});
+  });  
+});
+
+router.get('/user/cart/:id',function(res,req,next){
+  var user = ssn.user;
+  if(user == null){
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(req.params.id == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
+  } else {
+    next();
+  }
+
+},function(res,req,next){
+  var user = ssn.user;
+  var query = client.query("SELECT * FROM "+user+"_cart WHERE product_id=$2",[req.params.id], 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      
+  }); 
+  var user = [];
+  query.on('row', function(row) {
+    user.push(row);
+  });
+  // After all data is returned, return results
+  query.on('end', function() {
+    if (user.length == 0) {
+      res.status(500).json({success: false, data: "could not find product"});
+    }else {
+      res.json(user);
+    }
+  });  
+});
+//gets the cart bases of the user 
+router.get('/user/cart',function(res,req,next){
+  var user = ssn.user;
+  if(user == null){
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else {
+    next();
+  }
+},function(req,res,next){
+  var user = ssn.user;
+  var query = client.query("SELECT * FROM "+user+"_cart ", 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      }
+      
+  }); 
+
+  var user = [];
+  query.on('row', function(row) {
+    user.push(row);
+  });
+  // After all data is returned, close connection and return results
+  query.on('end', function() {
+    res.json(user);
+  });
+});
+
+router.delete('user/cart/delete/:id',function(res,req,next) {
+  var user = ssn.user;
+  var item = req.params.id
+  if(user == null){
+    return res.status(500).json({success: false, data: "not logged on"});
+  } else if(item == null){
+    return res.status(500).json({success: false, data: "no product to add to cart"});
+  }
+
+
+},function(res,req,next){
+  var user = ssn.user;
+  var item = req.params.id
+  client.query("DELETE FROM "+user+"_cart where product_id=$1",[item], 
+  function(err, result) {
+      if (err) {
+        return res.status(500).json({success: false,data: err});
+      } else {
+        res.status(200).json({success: true,data: "updated cart"});
+      }
+      
+  });
+});
+
+//GET from product table
+router.get('/products',function(req,res){
+  //SQL Query>Select Data
+  var results = [];
+
+  var query = client.query('select * from products');
+    
+  //Stream results back one row at a time
+  query.on('row',function(row){
+    results.push(row);
+  });
+  //After all data is returned, close connection and return results
+  query.on('end',function(row){
+//    client.end();
+    res.json(results);
+  });
 });
 
 

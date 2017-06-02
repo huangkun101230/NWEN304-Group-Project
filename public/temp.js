@@ -68,7 +68,8 @@ $(document).ready(function(e) {
                 url: url_add+'/register',
                 type: 'POST',
                 dataType: 'json',
-                data:{user: user, pass:password},
+                contentType: "application/json",
+                data: JSON.stringify( {user: user, pass:password}),
                 success: function (response) {
                     console.log("successfully add a new user!--"+response);
                     $('.response_msg').append('<p>Successfully registered! '+user+', welcome!</p> ');
@@ -108,18 +109,21 @@ $(document).ready(function(e) {
         var password = $('#password').val();
         $.ajax({
             url: url_add+'/login',
-            type: 'Get',
+            type: 'POST',
             dataType: 'json',
+            data: JSON.stringify( {user: username, pass:password}),
             success: function (user) {
                 console.log("successfully logged in");
                 if(user.user === username && user.pass === password){
                     $('#login h2').text('Log out');
                     $('#x_logout a').attr('id', 'log_out');
                 }
+                $('.response_msg').append('<p>Successfully logged! '+username+', welcome!</p> ');
 
             },
             error: function(error){
                 console.log("Unsuccessful to log-in");
+                $('.response_msg').append('<p>unsuccessfully logged! '+username+'</p> ');
             }
         });
     });
