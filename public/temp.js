@@ -107,11 +107,13 @@ $(document).ready(function(e) {
     $('#content').on('click', '#login', function () {
         var username = $('#user_name').val();
         var password = $('#password').val();
+        console.log(username);
         $.ajax({
             url: url_add+'/login',
             type: 'POST',
             dataType: 'json',
-            data: JSON.stringify( {user: username, pass:password}),
+            contentType: "application/json",
+            data: JSON.stringify({user: username, pass:password}),
             success: function (user) {
                 console.log("successfully logged in");
                 if(user.user === username && user.pass === password){
