@@ -1,7 +1,8 @@
-FROM node:7.7-alpine
+FROM node:7.7
 
 RUN npm install -g nodemon
 WORKDIR /code
+
 
 
 
