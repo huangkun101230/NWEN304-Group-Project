@@ -2,7 +2,7 @@ var appRoot = require('app-root-path');
 var client = require(appRoot+'/config/database.js');
 var faker = require('faker');
 
-client.query("CREATE TABLE IF NOT EXISTS  users (user_id  SERIAL PRIMARY KEY NOT NULL, username  TEXT NOT NULL, password  TEXT NOT NULL, cart BIGINT[][] )", 
+client.query("CREATE TABLE IF NOT EXISTS  users (user_id  SERIAL PRIMARY KEY NOT NULL, username  TEXT NOT NULL, password  TEXT NOT NULL)", 
 function(err, result) {
     if (err) {
       throw err;
