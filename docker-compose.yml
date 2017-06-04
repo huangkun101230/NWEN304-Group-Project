@@ -8,19 +8,19 @@ services:
     environment:
       - POSTGRES_DB=shopping
       - POSTGRES_USER=root
-  web:
-    build: .
-    working_dir: /code
-    volumes: 
-      - .:/code
-    ports:
-      - "8080:8080"
-      - "5858:5858"
-    depends_on:
-      - "db"
-    links: 
-      - "db"
-    command: nodemon --inspect=5858 #npm start
-    environment: 
-      - DATABASE_URL=postgres://root@db:5432/shopping
+  # web:
+  #   build: .
+  #   working_dir: /code
+  #   volumes: 
+  #     - .:/code
+  #   ports:
+  #     - "8080:8080"
+  #     - "5858:5858"
+  #   depends_on:
+  #     - "db"
+  #   links: 
+  #     - "db"
+  #   command: nodemon --inspect=5858 #npm start
+  #   environment: 
+  #     - DATABASE_URL=postgres://root@db:5432/shopping
 
