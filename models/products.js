@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING
     },
     price: DataTypes.STRING,
-    in_stock: DataTypes.INTERGER,
+    in_stock: DataTypes.INTEGER,
     picture_dir: DataTypes.STRING
   }, {
     classMethods: {
@@ -26,14 +26,5 @@ module.exports = function(sequelize, DataTypes) {
       }
     }
   });
-  for (var index = 0; index < 50; index++) {
-    products.create({
-      product_name: faker.commerce.productName,
-      product_des: faker.lorem.sentences,
-      price: faker.commerce.price,
-      in_stock: faker.random.number
-    });
-    
-  }
   return products;
 };
