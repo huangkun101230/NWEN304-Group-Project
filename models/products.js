@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     product_des: {
       allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
     price: DataTypes.STRING,
     in_stock: DataTypes.INTEGER,
