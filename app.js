@@ -21,11 +21,12 @@ app.use(session({
 
 
 app.use(require('./routes/index'));
+app.use(require('./routes/authentication'));
 
 models.sequelize.sync().then(function () {
   var products =  models.products;
 
-  
+  //checks if products table is empty if it is then add test data
   products.count().then(function(c){
     if (c == 0) {
       var rows = []

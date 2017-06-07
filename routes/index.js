@@ -8,6 +8,7 @@ var appRoot = require('app-root-path');
 var client = require(appRoot+"/config/database.js");
 var config  = require(appRoot+"/config/auth");
 var ssn = config.session;
+var models = require(appRoot+"/models");
 
 
 
@@ -22,85 +23,53 @@ router.get('/', function(req, res, next) {
 router.post('/register',jsonParser,function(req, res, next){
 
   var data = req.body
-  if (data == null || data.user == null || data.pass == null) {
+  if (data == null || data.user == '' || data.pass == '') {
     return res.status(500).json({success: false, data: "empty username or password"});
   } else {
     next();
   }
 
 },function(req,res,next){
-  var id;
+  //creates user in database
   var data = req.body
-  client.query("INSERT INTO users (username,password) VALUES ($1,$2) RETURNING user_id;",[data.user,data.pass], 
-  function(err, result) {
-      if (err) {
-        throw err;
-      }
-      id = result.rows[0].user_id;
-  });
-  var cartQuery = "CREATE TABLE IF NOT EXISTS  "+data.user+"_cart (id SERIAL  PRIMARY KEY NOT NULL, product_id BIGINT , amount  BIGINT)"
-  client.query(cartQuery, 
-  function(err, result) {
-      if (err) {
-        throw err;
-      }
-  });
-  
-  return res.status(200).json({success: true, data: "successfully added user"});
-});
-
-
-
-router.post('/login',jsonParser,function(req, res, next){
-  var data = req.body
-  if (Object.keys(data).length == 0) {
-     return res.status(500).json({success: false, data: "empty username or password"});
-  } else {
-
-
-      var login = [];
-      var query = client.query("select exists(select (username,password) from users where username=$1 and password=$2)",[data.user,data.pass], 
-      function(err, result) {
-          if (err) {
-            throw err;
-          }
-            
-      });
-      query.on('row', function(row) {
-        login.push(row);
-      });
-      // After all data is returned, close connection and return results
-      query.on('end', function() {
-        //res.json(login);
-        login = JSON.stringify(login);
-        login = JSON.parse(login)[0].exists
-        //console.log(login);
-          if (login) {
-            ssn = req.session;
-            ssn.user = data.user;
-            ssn.pass = data.pass;
-            res.status(200).json({success: true, data: "yes"})
-          } else{
-            res.status(500).json({success: false, data: "wrong username or password"});
-          }
-        
-      });
-  }
-    
-  
-
-});
-
-router.get('/logout',jsonParser,function(req, res, next){
-  req.session.destroy(function(err){
-    if(err){
-       next(err);
-    } else{
-      res.status(200).json({success: true, data: "yes"})
+  models.users.findOrCreate({
+    where: {
+      username: data.user
+    },
+    defaults: {
+      username: data.user,
+      password: data.pass
+    }
+  }).spread(function(user,created){
+    if (created) {
+      next();
+    } else {
+      res.status(500).json({success: false, data: "already added user"});
     }
   });
-
+},function(req, res, next){
+  //creates user cart
+  var data = req.body
+  var dbName = data.user+"_cart" 
+  models.define(dbName,{
+    products_id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: models.Sequelize.INTEGER
+    },
+    product_id: models.Sequelize.INTEGER,
+    amount: models.Sequelize.INTEGER
+  });
+  models.sequelize.sync()
+    .then(function(){
+      res.status(200).json({success: true, data: "successfully added user"});
+    })
+    .catch(function(err){
+       res.status(500).json({success: false, data: err});
+    });
 });
+
 
 // gets the row which has information about the user e.g username, password and whats in the users cart
 router.get('/user',jsonParser,function(req, res, next) {
