@@ -51,7 +51,7 @@ router.post('/register',jsonParser,function(req, res, next){
   //creates user cart
   var data = req.body
   var dbName = data.user+"_cart" 
-  models.define(dbName,{
+  models.sequelize.define(dbName,{
     products_id: {
       allowNull: false,
       autoIncrement: true,
@@ -70,37 +70,81 @@ router.post('/register',jsonParser,function(req, res, next){
     });
 });
 
+/*
+login routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
 
-// gets the row which has information about the user e.g username, password and whats in the users cart
-router.get('/user',jsonParser,function(req, res, next) {
-  var user = ssn.user;
-  if(user == null){
-    return res.status(500).json({success: false, data: "not logged on"});
+//logins a user
+router.post('/login',jsonParser,function(req, res, next){
+  var data = req.body
+  if (Object.keys(data).length == 0) {
+     return res.status(500).json({success: false, data: "empty username or password"});
   } else {
     next();
   }
-},function(req,res,next){
-  var user = ssn.user;
-  var query = client.query("SELECT * FROM users WHERE username=$1",[user], 
-  function(err, result) {
-      if (err) {
-        throw err;
-      }
-  });
+},function(req, res, next){
+    var data = req.body
+    models.users.findOne({ 
+        where: {
+            username: data.user
+        } 
+    }).then(function(user){
+        if (user != null) {
+            ssn = req.session;
+            ssn.user = data.user;
+            ssn.pass = data.pass;
+            res.status(200).json({success: true, data: "yes"})    
+        } else {
+            res.status(500).json({success: false, data: "wrong username or password"})
+        }
 
-  var user = [];
-  query.on('row', function(row) {
-    user.push(row);
-  });
-  // After all data is returned, close connection and return results
-  query.on('end', function() {
-    if (user.length == 0) {
-      res.status(500).json({success: false, data: "could not find user"});
-    }else {
-      res.json(user);
+    });
+});
+
+//logs out a user
+router.get('/logout',jsonParser,function(req, res, next){
+  req.session.destroy(function(err){
+    if(err){
+       next(err);
+    } else{
+      res.status(200).json({success: true, data: "yes"})
     }
   });
+
 });
+
+/*
+user cart and info routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
+
+
+// gets the row which has information about the user e.g username, password and whats in the users cart
+router.get('/user',function(req, res, next) {
+    console.log(console.log(req.session.user));
+    var user = ssn.user;
+
+    if(user == null){
+        return res.status(500).json({success: false, data: "not logged on"});
+    } else {
+        next();
+    }
+},function(req,res,next){
+  var user = ssn.user;
+  models.users.findOne({
+      where: {
+          username: user
+      }
+  }).then(function(result){
+    console.log(result);
+  });
+});
+
+
+
+
+
 
 //adds items to the cart of a particular user 
 router.put('/addtocart',jsonParser,function(res,req,next){
@@ -227,6 +271,11 @@ router.delete('user/cart/delete/:id',function(res,req,next) {
       
   });
 });
+
+/*
+products  routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
 
 //GET from product table
 router.get('/products',function(req,res){

@@ -13,7 +13,10 @@ app.use(session({
   secret: secret,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: true }
+  cookie: { 
+    secure: true,
+    maxAge: 60000 
+  }
 }));
 
 
@@ -22,6 +25,7 @@ app.use(session({
 
 app.use(require('./routes/index'));
 app.use(require('./routes/authentication'));
+app.use(require('./routes/user'));
 
 models.sequelize.sync().then(function () {
   var products =  models.products;
