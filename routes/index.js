@@ -103,7 +103,7 @@ router.post('/login',jsonParser,function(req, res, next){
 });
 
 //logs out a user
-router.get('/logout',jsonParser,function(req, res, next){
+router.post('/logout',jsonParser,function(req, res, next){
   req.session.destroy(function(err){
     if(err){
        next(err);
