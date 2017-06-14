@@ -176,5 +176,34 @@ router.get('/addtocart',jsonParser,function(res,req,next){
 
 
 
+/*
+search products
+////////////////////////////////////////////////////////////////////////////////////
+*/
+
+//GET(search) from product table
+router.post('/products/search',jsonParser,function(req, res, next){
+  var data = req.body
+  if (Object.keys(data).length == 0) {
+     return res.status(500).json({success: false, data: "empty search item"});
+  } else {
+    next();
+  }
+},function(req, res){
+    var results = [];
+
+  	var query = client.query('select * from products where product_id=$1"',[item]);
+    
+  //Stream results back one row at a time
+  query.on('row',function(row){
+    results.push(row);
+  });
+  //After all data is returned, close connection and return results
+  query.on('end',function(row){
+    res.json(results);
+  });
+
+});
+
 
 module.exports = router;
