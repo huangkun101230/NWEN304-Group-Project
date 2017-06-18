@@ -1,4 +1,4 @@
-var connectionString = process.env.DATABASE_URL || "postgres://root@localhost:5432/shopping";
+var connectionString = process.env.DATABASE_URL || "postgres://yaoyucui@localhost:5432/shopping";
 var pg = require('pg');
 var client = new pg.Client(connectionString);
 var sleep = require('sleep');
