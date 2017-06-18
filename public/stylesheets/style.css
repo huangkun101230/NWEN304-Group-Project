@@ -191,13 +191,13 @@ Search box ends
 .ui-state-default .ui-icon {
   background-color: #aaaaaa;
 }
-#display_register_form h2{
+#display_register_form h2, #display_login_form h2{
   padding-top: 10px;
 }
 .response_msg p{
   padding-top: 15px;
 }
-#display_register_form input{
+#display_register_form input, #display_login_form input{
   width: 319px;
   box-sizing: border-box;
   border: 2px solid #ccc;

@@ -98,53 +98,61 @@ $(document).ready(function(e) {
         }
     });
 
-// Log-in existing user
+/// Log-in existing user
+    $('#login').click(function (){
+        $('#display_login_form').dialog('open');
+    });
+    $('#display_login_form').dialog({
+        modal: true,
+        autoOpen: false,
+        height: 350,
+        width: 350,
+        buttons: {
+            "Log-in": function () {
+                var username = $('#login_user_name').val();
+                var password = $('#login_password').val();
+                $('response_msg').empty();
+                if($.trim(username).length === 0 || $.trim(password).length === 0){
+                    $('.response_msg').append('<p>User name/pass word can not be empty!</p> ');
+                    return;
+                }
+                else {
+                    $.ajax({
+                        url: url_add + '/login',
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: "application/json",
+                        data: JSON.stringify({user: username, pass: password}),
+                        success: function (user) {
+                            console.log("successfully logged in");
+                            if (user.user === username && user.pass === password) {//TODO this condition is not working
+                                window.alert("go");
+                                // $('#nav #login h2').text('Log out');
+                                // $('#nav #x_logout a').attr('id', 'log_out');
+
+                            }
+                            $('#nav #login h2').text('Log out');
+                            $('#nav #x_logout a').attr('id', 'log_out');
+                            $display_login_form = $('#display_login_form');
+                            $display_login_form.empty();
+                            $display_login_form.append('<h3>Successfully logged in as ' + username + ' !</h3>');
+                        },
+                        error: function (error) {
+                            console.log("Unsuccessful to log-in"+error);
+                            $('.response_msg').append('<p>This user does not existed, please try again!</p> ');
+                            return;
+                        }
+                    });
+                }
+                setTimeout(function(){$('#display_login_form').dialog('close');}, 2000);
+            },
+            "Cancel": function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+
     
-    // $('#login').click(function () {
-    //     console.log("display Login form");
-    //     $('#display_content').empty();
-    //     $content = $('#display_form');
-    //     $content.empty();
-    //     $content.append(
-    //         '<div id="login_form">'+
-    //         '<form>'+
-    //         '<label for="user_name"><h2>User name:</h2></label>'+
-    //         '<input id="user_name" type="text" name="user_name"/>'+
-    //         '<label for="password"><h2>Password:</h2></label>'+
-    //         '<input id="password" type="text" name="password"/>'+
-    //         '<button name="login" id="login">Login</button>'+
-    //         //'<button name="register_link" id="register_link">Register</button>'+
-    //         '</form>'+
-    //         '<span class="response_msg"></span>'+
-    //         '</div>'
-    //     );
-    // });
-    //
-    // $('#content').on('click', '#login', function () {
-    //     var username = $('#user_name').val();
-    //     var password = $('#password').val();
-    //     console.log(username);
-    //     $.ajax({
-    //         url: url_add+'/login',
-    //         type: 'POST',
-    //         dataType: 'json',
-    //         contentType: "application/json",
-    //         data: JSON.stringify({user: username, pass:password}),
-    //         success: function (user) {
-    //             console.log("successfully logged in");
-    //             if(user.user === username && user.pass === password){
-    //                 $('#login h2').text('Log out');
-    //                 $('#x_logout a').attr('id', 'log_out');
-    //             }
-    //             $('.response_msg').append('<p>Successfully logged! '+username+', welcome!</p> ');
-    //
-    //         },
-    //         error: function(error){
-    //             console.log("Unsuccessful to log-in");
-    //             $('.response_msg').append('<p>unsuccessfully logged! '+username+'</p> ');
-    //         }
-    //     });
-    // });
-    //
 
 });//ends
