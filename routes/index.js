@@ -4,7 +4,7 @@ var bodyParser = require('body-parser')
 
 var jsonParser = bodyParser.json()
 var path = require("path");
-var client = require("../config/database.js");
+
 var config  = require("../config/auth");
 var ssn = config.session;
 var models = require("../models");
@@ -51,7 +51,7 @@ router.post('/register',jsonParser,function(req, res, next){
   var data = req.body
   var dbName = data.user+"_cart" 
   models.sequelize.define(dbName,{
-    products_id: {
+    id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
@@ -135,9 +135,14 @@ router.get('/user',function(req, res, next) {
       where: {
           username: user
       }
-  }).then(function(result){
+  })
+  .then(function(result){
     console.log(result);
+  })
+  .catch(function(err){
+    res.status(500).json({success: false, data: err});
   });
+
 });
 
 
@@ -150,17 +155,40 @@ router.put('/addtocart',jsonParser,function(res,req,next){
   var user = ssn.user;
   if(user == null){
     return res.status(500).json({success: false, data: "not logged on"});
-  } else if(res.body.prodId == null || res.body.amount == null){
+  } else if(res.body.prodId == '' || res.body.amount == 0){
     return res.status(500).json({success: false, data: "no product to add to cart"});
+  } else {
+    next();
   }
-  var data = res.body;
+
+  /*var data = res.body;
   client.query("UPDATE users SET cart = cart || '{$1} WHERE username=$3",[data.prodId,user], 
   function(err, result) {
       if (err) {
         return res.status(500).json({success: false,data: err});
       }
       res.status(200).json({success: true,data: "updated cart"});
+  });*/
+},function(res,req,next){
+  var data = res.body;
+  var user = ssn.user;
+  var tableName = user+"_cart"
+  models.get(tableName).findOrCreate({
+    where: {
+      product_id: data.user
+    },
+    defaults: {
+      product_id: data.prodId,
+      amount: data.amount
+    }
+  })
+  .then(function(result){
+    res.status(200).json({success: true,data: "updated cart"});
+  })
+  .catch(function(err){
+    res.status(500).json({success: false,data: err});
   });
+  
 });
 
 //changes amount of certain product in cart
@@ -168,7 +196,7 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
   var user = ssn.user;
   if(user == null){
     return res.status(500).json({success: false, data: "not logged on"});
-  } else if(res.body.prodId == null || req.params.id == null){
+  } else if(res.body.prodId == '' || req.params.id == '' || res.body.amount == 0){
     return res.status(500).json({success: false, data: "no product to add to cart"});
   } else {
     next();
@@ -178,13 +206,15 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
 },function (res,req,next) {
   var user = ssn.user;
   var data = res.body;
-  client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
+/*  client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
   function(err, result) {
       if (err) {
         return res.status(500).json({success: false,data: err});
       }
       res.status(200).json({success: true,data: "updated cart"});
-  });  
+  });  */
+
+
 });
 
 router.get('/user/cart/:id',function(res,req,next){

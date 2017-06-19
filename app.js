@@ -3,11 +3,10 @@ var app = express();
 var port = process.env.PORT || 8080;
 var faker = require('faker');
 var session = require('express-session');
-var appRoot = require('app-root-path');
 var models = require('./models');
-//require(appRoot+"/database/db-init.js");
-app.use(express.static(appRoot+'/public'));
-//app.use(express.urlencoded());
+
+app.use(express.static('./public'));
+
 var secret = process.env.SESSION_SECRET || "ssshhhhh"
 app.use(session({
   secret: secret,

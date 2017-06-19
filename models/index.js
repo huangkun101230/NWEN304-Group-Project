@@ -13,7 +13,7 @@ var sequelize = new Sequelize(connectionString,{
   }
 });
 
-
+// scan though the models and add the table to the database 
 fs
   .readdirSync(__dirname)
   .filter(function(file) {

@@ -2,7 +2,7 @@
 var faker = require('faker');
 module.exports = function(sequelize, DataTypes) {
   var products = sequelize.define('products', {
-    products_id: {
+    product_id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
