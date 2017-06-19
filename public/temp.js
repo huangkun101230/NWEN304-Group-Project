@@ -1,7 +1,7 @@
 $(document).ready(function(e) {
 
     var url_add = 'http://localhost:8080';
-    var loggedin = false;
+    var isLoggedin = false;
 // the nav "shop" is clicked
     $('#shop').click(function () {
         console.log("display products");
@@ -27,10 +27,13 @@ $(document).ready(function(e) {
                                 '<p>'+product.product_des+'</p>'+
                                 '<p>&#36; '+product.price+'</p>'+
                             '</span>'+
-                            '<span class="add_cart"><button name="addToCart">Add to cart</button> <a>Add to cart</a></span>' +
+                            '<span class="add_cart"></span>' +
                         '</li>'
                     );
                 });
+                if(isLoggedin){
+                    $('.add_cart').append('<button name="addToCart">Add to cart</button>');
+                }
             },
             error: function (error) {
                 console.log("Unsuccessful to load products from database");
@@ -125,14 +128,17 @@ $(document).ready(function(e) {
                         data: JSON.stringify({user: username, pass: password}),
                         success: function (user) {
                             console.log("successfully logged in");
-                            if (user.user === username && user.pass === password) {//TODO this condition is not working
-                                window.alert("go");
+                            // if (user.user === username && user.pass === password) {//TODO this condition is not working
+                            //     window.alert("go");
                                 // $('#nav #login h2').text('Log out');
                                 // $('#nav #x_logout a').attr('id', 'log_out');
 
-                            }
-                            $('#nav #login h2').text('Log out');
-                            $('#nav #x_logout a').attr('id', 'log_out');
+                            // }
+                            isLoggedin = true;
+                            // $('#nav #login h2').text('Log out');
+                            // $('#nav #x_logout a').attr('id', 'log_out');
+                            $('#logout').css("display","normal");
+                            $('#login').css("display","none");
                             $display_login_form = $('#display_login_form');
                             $display_login_form.empty();
                             $display_login_form.append('<h3>Successfully logged in as ' + username + ' !</h3>');
@@ -152,7 +158,13 @@ $(document).ready(function(e) {
         }
     });
 
+//Log out
+    $('#logout').click(function () {
+        isLoggedin = false;
+        $('#login').css("display","normal");
+        $('#logout').css("display","none");
 
-    
+    });
+
 
 });//ends
