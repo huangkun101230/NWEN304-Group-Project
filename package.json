@@ -4,7 +4,7 @@
   "description": "our amazing shopping app",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "nodemon --inspect=5858",
     "start": "node app.js"
   },
   "repository": {
@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/mrllama123/nwen304-project3-team-sweet#readme",
   "dependencies": {
-    "app-root-path": "^2.0.1",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "express-session": "^1.15.3",
@@ -27,8 +26,10 @@
     "nodemon": "^1.11.0",
     "npm": "^4.6.1",
     "pg": "^6.2.2",
+    "pg-hstore": "^2.3.2",
     "pg-query": "^0.11.0",
     "rdb": "^1.6.4",
+    "sequelize": "^3.30.4",
     "sleep": "^5.1.1"
   }
 }

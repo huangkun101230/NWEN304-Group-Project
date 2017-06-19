@@ -4,10 +4,10 @@ var bodyParser = require('body-parser')
 
 var jsonParser = bodyParser.json()
 var path = require("path");
-var appRoot = require('app-root-path');
-var client = require(appRoot+"/config/database.js");
-var config  = require(appRoot+"/config/auth");
+
+var config  = require("../config/auth");
 var ssn = config.session;
+var models = require("../models");
 
 
 
@@ -22,76 +22,87 @@ router.get('/', function(req, res, next) {
 router.post('/register',jsonParser,function(req, res, next){
 
   var data = req.body
-  if (data == null || data.user == null || data.pass == null) {
+  if (data == null || data.user == '' || data.pass == '') {
     return res.status(500).json({success: false, data: "empty username or password"});
   } else {
     next();
   }
 
 },function(req,res,next){
-  var id;
+  //creates user in database
   var data = req.body
-  client.query("INSERT INTO users (username,password) VALUES ($1,$2) RETURNING user_id;",[data.user,data.pass], 
-  function(err, result) {
-      if (err) {
-        throw err;
-      }
-      id = result.rows[0].user_id;
+  models.users.findOrCreate({
+    where: {
+      username: data.user
+    },
+    defaults: {
+      username: data.user,
+      password: data.pass
+    }
+  }).spread(function(user,created){
+    if (created) {
+      next();
+    } else {
+      res.status(500).json({success: false, data: "already added user"});
+    }
   });
-  var cartQuery = "CREATE TABLE IF NOT EXISTS  "+data.user+"_cart (id SERIAL  PRIMARY KEY NOT NULL, product_id BIGINT , amount  BIGINT)"
-  client.query(cartQuery, 
-  function(err, result) {
-      if (err) {
-        throw err;
-      }
+},function(req, res, next){
+  //creates user cart
+  var data = req.body
+  var dbName = data.user+"_cart" 
+  models.sequelize.define(dbName,{
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: models.Sequelize.INTEGER
+    },
+    product_id: models.Sequelize.INTEGER,
+    amount: models.Sequelize.INTEGER
   });
-  
-  return res.status(200).json({success: true, data: "successfully added user"});
+  models.sequelize.sync()
+    .then(function(){
+      res.status(200).json({success: true, data: "successfully added user"});
+    })
+    .catch(function(err){
+       res.status(500).json({success: false, data: err});
+    });
 });
 
+/*
+login routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
 
-
+//logins a user
 router.post('/login',jsonParser,function(req, res, next){
   var data = req.body
   if (Object.keys(data).length == 0) {
      return res.status(500).json({success: false, data: "empty username or password"});
   } else {
-
-
-      var login = [];
-      var query = client.query("select exists(select (username,password) from users where username=$1 and password=$2)",[data.user,data.pass], 
-      function(err, result) {
-          if (err) {
-            throw err;
-          }
-            
-      });
-      query.on('row', function(row) {
-        login.push(row);
-      });
-      // After all data is returned, close connection and return results
-      query.on('end', function() {
-        //res.json(login);
-        login = JSON.stringify(login);
-        login = JSON.parse(login)[0].exists
-        //console.log(login);
-          if (login) {
+    next();
+  }
+},function(req, res, next){
+    var data = req.body
+    models.users.findOne({ 
+        where: {
+            username: data.user
+        } 
+    }).then(function(user){
+        if (user != null) {
             ssn = req.session;
             ssn.user = data.user;
             ssn.pass = data.pass;
-            res.status(200).json({success: true, data: "yes"})
-          } else{
-            res.status(500).json({success: false, data: "wrong username or password"});
-          }
-        
-      });
-  }
-    
-  
+            res.status(200).json({success: true, data: "yes"})    
+        } else {
+            res.status(500).json({success: false, data: "wrong username or password"})
+        }
 
+    });
 });
 
-router.get('/logout',jsonParser,function(req, res, next){
+//logs out a user
+router.post('/logout',jsonParser,function(req, res, next){
   req.session.destroy(function(err){
     if(err){
        next(err);
@@ -102,53 +113,82 @@ router.get('/logout',jsonParser,function(req, res, next){
 
 });
 
+/*
+user cart and info routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
+
+
 // gets the row which has information about the user e.g username, password and whats in the users cart
-router.get('/user',jsonParser,function(req, res, next) {
-  var user = ssn.user;
-  if(user == null){
-    return res.status(500).json({success: false, data: "not logged on"});
-  } else {
-    next();
-  }
+router.get('/user',function(req, res, next) {
+    console.log(console.log(req.session.user));
+    var user = ssn.user;
+
+    if(user == null){
+        return res.status(500).json({success: false, data: "not logged on"});
+    } else {
+        next();
+    }
 },function(req,res,next){
   var user = ssn.user;
-  var query = client.query("SELECT * FROM users WHERE username=$1",[user], 
-  function(err, result) {
-      if (err) {
-        throw err;
+  models.users.findOne({
+      where: {
+          username: user
       }
+  })
+  .then(function(result){
+    console.log(result);
+  })
+  .catch(function(err){
+    res.status(500).json({success: false, data: err});
   });
 
-  var user = [];
-  query.on('row', function(row) {
-    user.push(row);
-  });
-  // After all data is returned, close connection and return results
-  query.on('end', function() {
-    if (user.length == 0) {
-      res.status(500).json({success: false, data: "could not find user"});
-    }else {
-      res.json(user);
-    }
-  });
 });
+
+
+
+
+
 
 //adds items to the cart of a particular user 
 router.put('/addtocart',jsonParser,function(res,req,next){
   var user = ssn.user;
   if(user == null){
     return res.status(500).json({success: false, data: "not logged on"});
-  } else if(res.body.prodId == null || res.body.amount == null){
+  } else if(res.body.prodId == '' || res.body.amount == 0){
     return res.status(500).json({success: false, data: "no product to add to cart"});
+  } else {
+    next();
   }
-  var data = res.body;
+
+  /*var data = res.body;
   client.query("UPDATE users SET cart = cart || '{$1} WHERE username=$3",[data.prodId,user], 
   function(err, result) {
       if (err) {
         return res.status(500).json({success: false,data: err});
       }
       res.status(200).json({success: true,data: "updated cart"});
+  });*/
+},function(res,req,next){
+  var data = res.body;
+  var user = ssn.user;
+  var tableName = user+"_cart"
+  models.get(tableName).findOrCreate({
+    where: {
+      product_id: data.user
+    },
+    defaults: {
+      product_id: data.prodId,
+      amount: data.amount
+    }
+  })
+  .then(function(result){
+    res.status(200).json({success: true,data: "updated cart"});
+  })
+  .catch(function(err){
+    res.status(500).json({success: false,data: err});
   });
+  
 });
 
 //changes amount of certain product in cart
@@ -156,7 +196,7 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
   var user = ssn.user;
   if(user == null){
     return res.status(500).json({success: false, data: "not logged on"});
-  } else if(res.body.prodId == null || req.params.id == null){
+  } else if(res.body.prodId == '' || req.params.id == '' || res.body.amount == 0){
     return res.status(500).json({success: false, data: "no product to add to cart"});
   } else {
     next();
@@ -166,13 +206,15 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
 },function (res,req,next) {
   var user = ssn.user;
   var data = res.body;
-  client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
+/*  client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
   function(err, result) {
       if (err) {
         return res.status(500).json({success: false,data: err});
       }
       res.status(200).json({success: true,data: "updated cart"});
-  });  
+  });  */
+
+
 });
 
 router.get('/user/cart/:id',function(res,req,next){
@@ -258,6 +300,11 @@ router.delete('user/cart/delete/:id',function(res,req,next) {
       
   });
 });
+
+/*
+products  routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
 
 //GET from product table
 router.get('/products',function(req,res){
