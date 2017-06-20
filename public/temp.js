@@ -222,7 +222,7 @@ $(document).ready(function(e) {
                 });
             },
             error: function (error) {
-                console.log("Unsuccessful to load products from database");
+                console.log("Unsuccessful to load products from cart database");
             }
         });
     });
