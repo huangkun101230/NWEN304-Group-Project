@@ -76,6 +76,10 @@ h3{
   float: right;
   margin: 15px 30px;
 }
+#cart{
+  text-decoration: none;
+  color: #333333;
+}
 /*top banner ends*/
 
 /* navigation starts*/
