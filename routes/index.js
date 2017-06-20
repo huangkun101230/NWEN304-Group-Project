@@ -137,7 +137,7 @@ router.get('/user',function(req, res, next) {
       }
   })
   .then(function(result){
-    console.log(result);
+    res.json(result);
   })
   .catch(function(err){
     res.status(500).json({success: false, data: err});
@@ -196,7 +196,7 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
   var user = ssn.user;
   if(user == null){
     return res.status(500).json({success: false, data: "not logged on"});
-  } else if(res.body.prodId == '' || req.params.id == '' || res.body.amount == 0){
+  } else if(req.params.id == '' || res.body.amount == 0){
     return res.status(500).json({success: false, data: "no product to add to cart"});
   } else {
     next();
@@ -206,6 +206,7 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
 },function (res,req,next) {
   var user = ssn.user;
   var data = res.body;
+  var id = req.params.id;
 /*  client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
   function(err, result) {
       if (err) {
@@ -213,7 +214,18 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
       }
       res.status(200).json({success: true,data: "updated cart"});
   });  */
-
+  var tableName = user+"_cart";
+  models.get(tableName).update({
+    amount: data.amount
+  },
+  {
+    where: {
+      product_id: id 
+    }
+  })
+  .then(function(result){
+    res.status(200).json({success: true, data: "added "+result})
+  });
 
 });
 
@@ -221,7 +233,7 @@ router.get('/user/cart/:id',function(res,req,next){
   var user = ssn.user;
   if(user == null){
     return res.status(500).json({success: false, data: "not logged on"});
-  } else if(req.params.id == null){
+  } else if(req.params.id == null || req.params.id == ''){
     return res.status(500).json({success: false, data: "no product to add to cart"});
   } else {
     next();
@@ -229,6 +241,20 @@ router.get('/user/cart/:id',function(res,req,next){
 
 },function(res,req,next){
   var user = ssn.user;
+  var id = req.params.id;
+  var dbName = user+"_cart"
+  models.get(dbName).findOne({
+      where: {
+          product_id: id
+      }
+  })
+  .then(function(result){
+    res.json(result);
+  })
+  .catch(function(err){
+    res.status(500).json({success: false, data: err});
+  });
+  /*
   var query = client.query("SELECT * FROM "+user+"_cart WHERE product_id=$2",[req.params.id], 
   function(err, result) {
       if (err) {
@@ -248,17 +274,28 @@ router.get('/user/cart/:id',function(res,req,next){
       res.json(user);
     }
   });  
+  */
 });
+
 //gets the cart bases of the user 
 router.get('/user/cart',function(res,req,next){
   var user = ssn.user;
-  if(user == null){
+  if(user == null || user == ""){
     return res.status(500).json({success: false, data: "not logged on"});
   } else {
     next();
   }
 },function(req,res,next){
   var user = ssn.user;
+  var dbName = user+"_cart"
+  models.get(dbName).findAll()
+    .then(function(result){
+      res.json(result);
+    })
+    .catch(function(err){
+      res.status(500).json({success: false,data: err});
+    });
+  /*
   var query = client.query("SELECT * FROM "+user+"_cart ", 
   function(err, result) {
       if (err) {
@@ -275,6 +312,7 @@ router.get('/user/cart',function(res,req,next){
   query.on('end', function() {
     res.json(user);
   });
+  */
 });
 
 router.delete('user/cart/delete/:id',function(res,req,next) {
@@ -282,14 +320,31 @@ router.delete('user/cart/delete/:id',function(res,req,next) {
   var item = req.params.id
   if(user == null){
     return res.status(500).json({success: false, data: "not logged on"});
-  } else if(item == null){
+  } else if(item == null || item == ""){
     return res.status(500).json({success: false, data: "no product to add to cart"});
+  } else {
+    next();
   }
 
 
 },function(res,req,next){
   var user = ssn.user;
-  var item = req.params.id
+  var id = req.params.id
+  var dbName = user+"_cart"
+  models.get(dbName).destroy({
+    where: {
+      product_id: id
+    }
+  }).then(function(result){
+    if(result > 0 ){
+      res.status(200).json({success: true, data: "delete product from cart"});
+    } else {
+      res.status(500).json({success: false, data: "did not delete product from cart"});
+    }
+  }).catch(function(err){
+    res.status(500).json({success: false, data: err});
+  })
+  /*
   client.query("DELETE FROM "+user+"_cart where product_id=$1",[item], 
   function(err, result) {
       if (err) {
@@ -298,7 +353,7 @@ router.delete('user/cart/delete/:id',function(res,req,next) {
         res.status(200).json({success: true,data: "updated cart"});
       }
       
-  });
+  });*/
 });
 
 /*
