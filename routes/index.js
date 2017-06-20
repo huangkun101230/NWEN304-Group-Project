@@ -363,6 +363,13 @@ products  routes
 
 //GET from product table
 router.get('/products',function(req,res){
+  models.products.findAll()
+    .then(function(result){
+      res.json(result);
+    }).catch(function(err){
+      res.status(500).json({success: false, data: err});
+    });
+  /*
   //SQL Query>Select Data
   var results = [];
 
@@ -377,6 +384,7 @@ router.get('/products',function(req,res){
 //    client.end();
     res.json(results);
   });
+  */
 });
 
 
