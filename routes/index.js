@@ -269,9 +269,9 @@ router.get('/user/cart',function(req, res, next){
 });
 
 router.delete('user/cart/delete/:id',function(req, res, next) {
-  var user = ssn.user;
+  var user = ssn;
   var item = req.params.id
-  if(user == null){
+  if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(item == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
@@ -312,6 +312,25 @@ router.get('/products',function(req, res, next){
       res.status(500).json({success: false, data: err});
     });
 
+});
+
+//gets a certain product based off its id 
+router.get('/products/:id',function(req, res, next){
+  var id = req.params.id;
+  if (typeof id == 'undefined') {
+    res.status(500).json({success: false, data: "not logged on"});
+  } else {
+    next();
+  }
+},function(req, res, next){
+  var id = req.params.id;
+  models.products.findById(id)
+    .then(function(result){
+      res.status(200).json(result);
+    })
+    .catch(function(err){
+      res.status(500).json({success: false, data: err});
+    });
 });
 
 
