@@ -180,7 +180,7 @@ router.put('/addtocart',jsonParser,function(res,req,next){
 });
 
 //changes amount of certain product in cart
-router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
+router.post('/user/cart/amount/:id',jsonParser,function(res,req,next){
   var user = ssn;
   if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
