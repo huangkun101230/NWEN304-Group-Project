@@ -76,6 +76,10 @@ h3{
   float: right;
   margin: 15px 30px;
 }
+#cart{
+  text-decoration: none;
+  color: #333333;
+}
 /*top banner ends*/
 
 /* navigation starts*/
@@ -184,17 +188,27 @@ Search box ends
 /*-----------products list layout ends-------------*/
 
 /*-----------register form layout starts-------------*/
-#content #register_form, #content #login_form{
-  margin: 20px auto;
-  border: #666666 2px solid;
-  border-radius: 4px;
-  width: 15%;
-  padding: 20px;
+.ui-dialog > .ui-widget-header {
+  background: #666666;
+  border: #666666 1px solid;
 }
-#content #register_form button, #content #login_form button{
-  /*float: left;*/
+.ui-state-default .ui-icon {
+  background-color: #aaaaaa;
+}
+#display_register_form h2, #display_login_form h2{
+  padding-top: 10px;
+}
+.response_msg p{
+  padding-top: 15px;
+}
+#display_register_form input, #display_login_form input{
+  width: 319px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: white;
   padding: 5px;
-  margin: 10px;
 }
 /*-----------register form layout ends-------------*/
 
