@@ -1,9 +1,13 @@
 $(document).ready(function(e) {
 
     var url_add = 'http://localhost:8080';
+    var isLoggedin = false;
+    var username = '';
+    var password = '';
 // the nav "shop" is clicked
     $('#shop').click(function () {
         console.log("display products");
+        $('#display_form').empty();
         $('#display_content').empty();
         loadProducts();
 
@@ -25,10 +29,13 @@ $(document).ready(function(e) {
                                 '<p>'+product.product_des+'</p>'+
                                 '<p>&#36; '+product.price+'</p>'+
                             '</span>'+
-                            '<span class="add_cart"><a>Add to cart</a></span>' +
+                            '<span class="add_cart"></span>' +
                         '</li>'
                     );
                 });
+                if(isLoggedin){
+                    $('.add_cart').append('<button name="addToCart">Add to cart</button>');
+                }
             },
             error: function (error) {
                 console.log("Unsuccessful to load products from database");
@@ -36,99 +43,210 @@ $(document).ready(function(e) {
         });
     }
 
-    $('#register').click(function () {
-        console.log("display register form");
-
-        $content = $('#content');
-        $content.empty();
-        $content.append(
-            '<div id="register_form">'+
-            '<form>'+
-            '<label for="user_name"><h2>User name:</h2></label>'+
-            '<input id="user_name" type="text" name="user_name"/>'+
-            '<label for="password"><h2>Password:</h2></label>'+
-            '<input id="password" type="text" name="password"/>'+
-            '<button name="submit" id="submit">Submit</button>'+
-            '<button name="cancel" id="cancel">Cancel</button>'+
-            '</form>'+
-            '<span class="response_msg"></span>'+
-            '</div>'
-        );
+// register a new user
+    $('#register').click(function (){
+        $('#display_register_form').dialog('open');
     });
 
-    $('#content').on('click', '#submit', function () {
-        console.log("submit the register form...")
-        var user = $('#user_name').val();
-        var password = $('#password').val();
-        if(user === '' || password === ''){
-            $('.response_msg').append('<p>please enter user name/password...</p> ');
-        }
-        else{
-            $.ajax({
-                url: url_add+'/register',
-                type: 'POST',
-                dataType: 'json',
-                contentType: "application/json",
-                data: JSON.stringify( {user: user, pass:password}),
-                success: function (response) {
-                    console.log("successfully add a new user!--"+response);
-                    $('.response_msg').append('<p>Successfully registered! '+user+', welcome!</p> ');
-
-                },
-                error: function(error){
-                    console.log("Unsuccessful to add user"+error);
+    $('#display_register_form').dialog({
+        modal: true,
+        autoOpen: false,
+        height: 350,
+        width: 350,
+        buttons: {
+            "Submit": function () {
+                $msg = $('.response_msg');
+                $msg.empty();
+                var user = $.trim($('#user_name').val());
+                var password = $.trim($('#password').val());
+                var confirm_password = $.trim($('#confirm_password').val());
+                if(user.length===0){
+                    $msg.append('<p>please enter User Name...</p> ');
+                    console.log("empty 'username' fields");
+                    return;
                 }
-            });
+                else if(password.length===0){
+                    $msg.append('<p>please enter Password...</p> ');
+                    console.log("empty 'psw' fields");
+                    return;
+                }
+                else if(password!==confirm_password){
+                    $msg.append('<p>Your passwords are not match, please try again...</p> ');
+                    console.log("passwords are not match");
+                    return;
+                }
+                else{
+                    $.ajax({
+                        url: url_add+'/register',
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: "application/json",
+                        data: JSON.stringify( {user: user, pass:password}),
+                        success: function (response) {
+                            console.log("successfully add a new user!");
+                            $display_register_form = $('#display_register_form');
+                            $display_register_form.empty();
+                            $display_register_form.append('<h3>Successfully created a new user! welcome '+user+' !</h3>');
+                            //$('#content').appendChild('<p>Successfully registered! '+user+', welcome!</p>');
+                            //$('.response_msg').append('<p>Successfully registered! '+user+', welcome!</p> ');
+                        },
+                        error: function(error){
+                            console.log("Unsuccessful to add user"+error);
+                        }
+                    });
+                    setTimeout(function(){$('#display_register_form').dialog('close');}, 2000);
+                }
+            },
+            "Cancel": function(){
+                $(this).dialog('close');
+            }
         }
-
     });
 
+/// Log-in existing user
+    $('#login').click(function (){
+        $('#display_login_form').dialog('open');
+    });
+    $('#display_login_form').dialog({
+        modal: true,
+        autoOpen: false,
+        height: 350,
+        width: 350,
+        buttons: {
+            "Log-in": function () {
+                username = $('#login_user_name').val();
+                password = $('#login_password').val();
+                $('response_msg').empty();
+                if($.trim(username).length === 0 || $.trim(password).length === 0){
+                    $('.response_msg').append('<p>User name/pass word can not be empty!</p> ');
+                    return;
+                }
+                else {
+                    $.ajax({
+                        url: url_add + '/login',
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: "application/json",
+                        data: JSON.stringify({user: username, pass: password}),
+                        success: function (user) {
+                            console.log("successfully logged in");
+                            //window.alert(user.user);
+                            // if (user.user === username && user.pass === password) {//TODO this condition is not working
+                            //     window.alert("go");
+                                // $('#nav #login h2').text('Log out');
+                                // $('#nav #x_logout a').attr('id', 'log_out');
 
-    $('#login').click(function () {
-        console.log("display register form");
-
-        $content = $('#content');
-        $content.empty();
-        $content.append(
-            '<div id="login_form">'+
-            '<form>'+
-            '<label for="user_name"><h2>User name:</h2></label>'+
-            '<input id="user_name" type="text" name="user_name"/>'+
-            '<label for="password"><h2>Password:</h2></label>'+
-            '<input id="password" type="text" name="password"/>'+
-            '<button name="login" id="login">Login</button>'+
-            '<button name="register_link" id="register_link">Register</button>'+
-            '</form>'+
-            '<span class="response_msg"></span>'+
-            '</div>'
-        );
+                            // }
+                            isLoggedin = true;
+                            // $('#nav #login h2').text('Log out');
+                            // $('#nav #x_logout a').attr('id', 'log_out');
+                            $('#logout').css("display","normal");
+                            $('#login').css("display","none");
+                            $display_login_form = $('#display_login_form');
+                            $display_login_form.empty();
+                            $display_login_form.append('<h3>Successfully logged in as ' + username + ' !</h3>');
+                        },
+                        error: function (error) {
+                            console.log("Unsuccessful to log-in"+error);
+                            $('.response_msg').append('<p>This user does not existed, please try again!</p> ');
+                            return;
+                        }
+                    });
+                }
+                setTimeout(function(){$('#display_login_form').dialog('close');}, 2000);
+            },
+            "Cancel": function () {
+                $(this).dialog('close');
+            }
+        }
     });
 
-    $('#content').on('click', '#login', function () {
-        var username = $('#user_name').val();
-        var password = $('#password').val();
-        console.log(username);
+//Log out
+    $('#logout').click(function () {
+        isLoggedin = false;
+        $('#login').css("display","normal");
+        $('#logout').css("display","none");
         $.ajax({
-            url: url_add+'/login',
-            type: 'POST',
+            url: url_add+'/logout',
+            type:'GET',
             dataType: 'json',
-            contentType: "application/json",
-            data: JSON.stringify({user: username, pass:password}),
-            success: function (user) {
-                console.log("successfully logged in");
-                if(user.user === username && user.pass === password){
-                    $('#login h2').text('Log out');
-                    $('#x_logout a').attr('id', 'log_out');
-                }
-                $('.response_msg').append('<p>Successfully logged! '+username+', welcome!</p> ');
+            success: function (response) {
+
+                window.alert(response);
 
             },
-            error: function(error){
-                console.log("Unsuccessful to log-in");
-                $('.response_msg').append('<p>unsuccessfully logged! '+username+'</p> ');
+            error: function (error) {
+                console.log("");
             }
         });
     });
 
+//To add to the cart when the button is clicked
+    $('#display_content').on('click', '.add_cart', function () {
+        $.ajax({
+            url: url_add+'/addToCart',
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json",
+            data: JSON.stringify( {user: user, pass:password}),
+            success: function (response) {
+
+            },
+            error: function(error){
+
+            }
+        });
+    });
+
+//Shopping Cart
+    $('#cart').click(function () {
+        $('#display_content').empty();
+        $display_content = $('#display_content');
+        $.ajax({
+            url: url_add+'/cart',//may change this later for the according the serverside
+            type:'GET',
+            dataType: 'json',
+            success: function (products) {
+                $.each(products, function (i, product) {
+                    $display_content.append(
+                        '<li class="products_list">'+
+                            '<img src="'+product.picture_dir+'" alt="'+product.product_name+'">'+
+                            '<span class="products_des">'+
+                                '<h2>'+product.product_name+'</h2>'+
+                                '<p>'+product.product_des+'</p>'+
+                                '<p>&#36; '+product.price+'</p>'+
+                            '</span>'+
+                            '<span class="add_cart"></span>' +
+                        '</li>'
+                    );
+                });
+            },
+            error: function (error) {
+                console.log("Unsuccessful to load products from cart database");
+            }
+        });
+    });
+
+//Search the product
+    $('#search a').click(function () {
+        var search_content=$('#search input').val();
+        if($search_content !== '') {
+            // window.alert($search_content);
+            $.ajax({
+                url: url_add + '/search',
+                type: 'POST',
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify({product_name: search_content}),//TODO search for the product name
+                success: function (product) {
+                //found or not found
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+        $('#search input').val('');
+    });
 
 });//ends
