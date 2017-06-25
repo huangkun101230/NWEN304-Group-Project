@@ -8,6 +8,10 @@ var appRoot = require('app-root-path');
 require(appRoot+"/database/db-init.js");
 var sleep = require('sleep');
 sleep.sleep(10); // its a hack to wait for the db to start 
+var models = require('./models');
+var passport = require('passport');
+var flash = require('connect-flash');
+app.use(express.static('./public'));
 
 //app.use(express.urlencoded());
 var secret = process.env.SESSION_SECRET || "ssshhhhh"
@@ -16,8 +20,11 @@ app.use(session({
   cookie: { secure: true }
 }));
 
+app.use(require('./config/passport'));
 
-
+app.use(passport.initialize());
+app.use(passport.session());  //persistent login sessions
+app.use(flash()); //use connect-flash for flash messages stored in session
 
 
 app.use(require('./routes/index'));

@@ -108,6 +108,18 @@ router.post('/register',jsonParser,function(req, res, next){
 });
 
 router.get('/login',jsonParser,function(req, res, next){
+/*
+login routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
+
+// logins a user
+router.post('/login',jsonParser, function(){
+  passport.authenticate('local-login',{
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: true
+})},function(req, res, next){
   var data = req.body
   if (data === null || data.user === null || data.pass === null) {
      return res.status(500).json({success: false, data: "empty username or password"});
@@ -125,6 +137,31 @@ router.get('/login',jsonParser,function(req, res, next){
   
 
 });
+// router.post('/login',jsonParser,function(req, res, next){
+//   var data = req.body
+//   if (Object.keys(data).length == 0) {
+//      return res.status(500).json({success: false, data: "empty username or password"});
+//   } else {
+//     next();
+//   }
+// },function(){
+//   passport.authenticate('local-login',{
+//   successRedirect: '/',
+//   failureRedirect: '/login',
+//   failureFlash: true
+// }).then(function(user){
+//         if (user != null) {
+//             ssn = req.session;
+//             ssn.user = data.user;
+//             ssn.pass = data.pass;
+            
+//             res.status(200).json({success: true, data: "yes"})    
+//         } else {
+//             res.status(500).json({success: false, data: "wrong username or password"})
+//         }
+
+//     });
+// });
 
 router.get('/logout',jsonParser,function(req, res, next){
   req.session.destroy(function(err){
@@ -204,6 +241,25 @@ router.post('/products/search',jsonParser,function(req, res, next){
   });
 
 });
+//Search from products
+router.get('/search',function(req, res){
+    models.products.findOne({
+      where: {products_name: req},
+      attributes: ['id', ['name','products_name']]
+    }).then(function(results){
+      res.json(results);
+    });
+ });
+
+//Facebook
+Redirect the user to Facebook for authentication.
+router.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
+
+// Facebook will redirect the user to this URL after approval.
+router.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { successRedirect: '/',
+                                      failureRedirect: '/login' }));
+
 
 
 module.exports = router;

@@ -198,4 +198,20 @@ Search box ends
 }
 /*-----------register form layout ends-------------*/
 
+.oAuthButton{
+font-size: 15px;
+line-height: 1;
+padding: 10px 25px 10px;
+transition-property: background-color,border-color,color,box-shadow,filter;
+transition-duration: .3s;
+letter-spacing: 2px;
+min-width: 160px;
+text-transform: uppercase;
+color: #fff;
+}
+
+.fbBtn{
+background-color: grey;
+}
+
 /*content layout ends*/
