@@ -57,9 +57,10 @@ $(document).ready(function(e) {
             "Submit": function () {
                 $msg = $('.response_msg');
                 $msg.empty();
-                var user = $.trim($('#user_name').val());
-                var password = $.trim($('#password').val());
+                var user = $('#user_name').val();
+                var password = $('#password').val();
                 var confirm_password = $.trim($('#confirm_password').val());
+                //check if any of these fields are empty
                 if(user.length===0){
                     $msg.append('<p>please enter User Name...</p> ');
                     console.log("empty 'username' fields");
@@ -83,21 +84,39 @@ $(document).ready(function(e) {
                         contentType: "application/json",
                         data: JSON.stringify( {user: user, pass:password}),
                         success: function (response) {
-                            console.log("successfully add a new user!");
-                            $display_register_form = $('#display_register_form');
-                            $display_register_form.empty();
-                            $display_register_form.append('<h3>Successfully created a new user! welcome '+user+' !</h3>');
-                            //$('#content').appendChild('<p>Successfully registered! '+user+', welcome!</p>');
-                            //$('.response_msg').append('<p>Successfully registered! '+user+', welcome!</p> ');
+                            var temp = JSON.parse(response.responseText);
+                            console.log(temp.data);
+                            $msg.append('<h3 style="color: royalblue;">Successfully created a new user! welcome '+user+' !</h3>');
                         },
                         error: function(error){
-                            console.log("Unsuccessful to add user"+error);
+                            var temp = JSON.parse(error.responseText);
+                            console.log("Unsuccessful to add user "+temp.data);
+                            $msg.append('<p>'+temp.data+', Please try again!!</p>');
+                            console.log(error);
+                            //stop the pop-up window to close for 2 seconds
+                            setTimeout(function(){
+                                $('#user_name').val('');
+                                $('#password').val('');
+                                $('#confirm_password').val('');
+                                $msg.empty();
+                            }, 3000);
                         }
                     });
-                    setTimeout(function(){$('#display_register_form').dialog('close');}, 2000);
+                    setTimeout(function(){
+                        $('#user_name').val('');
+                        $('#password').val('');
+                        $('#confirm_password').val('');
+                        $msg.empty();
+                        $('#display_register_form').dialog('close');
+                    }, 2000);
                 }
             },
             "Cancel": function(){
+                //Reset all inputs and response msg
+                $('#user_name').val('');
+                $('#password').val('');
+                $('#confirm_password').val('');
+                $msg.empty();
                 $(this).dialog('close');
             }
         }
@@ -147,7 +166,7 @@ $(document).ready(function(e) {
                             $display_login_form.append('<h3>Successfully logged in as ' + username + ' !</h3>');
                         },
                         error: function (error) {
-                            console.log("Unsuccessful to log-in"+error);
+                            console.log("Unsuccessful to log-in"+error.user);
                             $('.response_msg').append('<p>This user does not existed, please try again!</p> ');
                             return;
                         }

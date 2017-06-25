@@ -23,7 +23,7 @@ router.post('/register',jsonParser,function(req, res, next){
 
   var data = req.body
   if (data == null || data.user == '' || data.pass == '') {
-    return res.status(500).json({success: false, data: "empty username or password"});
+      return res.status(500).json({success: false, data: "empty username or password"});
   } else {
     next();
   }
@@ -43,7 +43,7 @@ router.post('/register',jsonParser,function(req, res, next){
     if (created) {
       next();
     } else {
-      res.status(500).json({success: false, data: "already added user"});
+      res.status(500).json({success: false, data: "This user already exist"});
     }
   });
 },function(req, res, next){
