@@ -5,7 +5,10 @@
     <title>Sweet shopping site</title>
 
     <link rel="stylesheet" href="stylesheets/style.css"/>
+    <link rel="stylesheet" href="stylesheets/jquery-ui.min.css"/>
     <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <!--<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/jquery.validate.min.js"></script>-->
     <script src="temp.js"></script>
 </head>
 <body>
@@ -13,11 +16,10 @@
         <div id="banner">
             <h1>The sweet shopping site</h1>
             <span>
-                <a href="#">
+                <a id="cart" href="#">
                     <img src="img/shopping_cart.png">
+                    <p>Cart:</p>
                 </a>
-                <p>cart:</p>
-
             </span>
         </div>
 
@@ -27,7 +29,10 @@
                 <li><a id="shop" href="#"><h2>Shop</h2></a></li>
                 <li><a id="about_us" href="#"><h2>About Us</h2></a></li>
                 <li><a id="register" href="#"><h2>Register</h2></a></li>
-                <li id="x_logout"><a id="login" href="#"><h2>Login</h2></a></li>
+                <li id="x_logout">
+                    <a id="login" href="#"><h2>Login</h2></a>
+                    <a id="logout" href="#" style="display: none;"><h2>Log out</h2></a>
+                </li>
                 <li id="search" class="right">
                     <form>
                         <a>Search</a>
@@ -39,7 +44,8 @@
         </div>
     </div>
     <div id="content">
-        <h3>all contents updates here</h3>
+        <div id="page_heading"><h3>Welcome to The sweet shopping site</h3></div>
+
         <ul id="display_content">
             <!--<li class="products_list">-->
                 <!--<img src="img/products_img/yeezy_350.jpg" alt="yeezy_350">-->
@@ -85,6 +91,7 @@
                     <br>
                     <a href="#" class = "oAuthButton fbBtn"> FACEBOOK login</a>
                 </div>
+
                 <span class="response_msg"></span>
             </form>
         </div>
