@@ -93,7 +93,7 @@ router.post('/login',jsonParser,function(req, res, next){
             ssn = req.session;
             ssn.user = data.user;
             ssn.pass = data.pass;
-            res.status(200).json({success: true, data: "yes"})    
+            res.status(200).json({success: true, data: "yes"})
         } else {
             res.status(500).json({success: false, data: "wrong username or password"})
         }

@@ -2,8 +2,9 @@ $(document).ready(function(e) {
 
     var url_add = 'http://localhost:8080';
     var isLoggedin = false;
-    var username = '';
-    var password = '';
+    var isAdmin = false;
+    // var username = '';
+    // var password = '';
 // the nav "shop" is clicked
     $('#shop').click(function () {
         console.log("display products");
@@ -93,7 +94,7 @@ $(document).ready(function(e) {
                             console.log("Unsuccessful to add user "+temp.data);
                             $msg.append('<p>'+temp.data+', Please try again!!</p>');
                             console.log(error);
-                            //stop the pop-up window to close for 2 seconds
+                            //stop the pop-up window to close for 3 seconds
                             setTimeout(function(){
                                 $('#user_name').val('');
                                 $('#password').val('');
@@ -133,11 +134,12 @@ $(document).ready(function(e) {
         width: 350,
         buttons: {
             "Log-in": function () {
-                username = $('#login_user_name').val();
-                password = $('#login_password').val();
-                $('response_msg').empty();
+                var username = $('#login_user_name').val();
+                var password = $('#login_password').val();
+                $msg = $('.response_msg');
+                $msg.empty();
                 if($.trim(username).length === 0 || $.trim(password).length === 0){
-                    $('.response_msg').append('<p>User name/pass word can not be empty!</p> ');
+                    $msg.append('<p>User name/pass word can not be empty!</p> ');
                     return;
                 }
                 else {
@@ -147,34 +149,39 @@ $(document).ready(function(e) {
                         dataType: 'json',
                         contentType: "application/json",
                         data: JSON.stringify({user: username, pass: password}),
-                        success: function (user) {
-                            console.log("successfully logged in");
-                            //window.alert(user.user);
-                            // if (user.user === username && user.pass === password) {//TODO this condition is not working
-                            //     window.alert("go");
-                                // $('#nav #login h2').text('Log out');
-                                // $('#nav #x_logout a').attr('id', 'log_out');
-
-                            // }
+                        success: function (response) {
+                            console.log(response);
+                            //var temp = JSON.parse(response);
+                            console.log("successful to log-in -- "+response.data);
                             isLoggedin = true;
-                            // $('#nav #login h2').text('Log out');
-                            // $('#nav #x_logout a').attr('id', 'log_out');
-                            $('#logout').css("display","normal");
-                            $('#login').css("display","none");
-                            $display_login_form = $('#display_login_form');
-                            $display_login_form.empty();
-                            $display_login_form.append('<h3>Successfully logged in as ' + username + ' !</h3>');
+                            $msg.append('<h3 style="color: royalblue;">Successfully logged in as ' + username + ' !</h3>');
                         },
                         error: function (error) {
-                            console.log("Unsuccessful to log-in"+error.user);
-                            $('.response_msg').append('<p>This user does not existed, please try again!</p> ');
-                            return;
+                            var temp = JSON.parse(error.responseText);
+                            console.log("error: "+error);
+                            console.log("Unsuccessful to log-in -- "+temp.data);
+                            $msg.append('<p>'+ temp.data+'</p>');
+                            setTimeout(function(){
+                                $('#login_user_name').val('');
+                                $('#login_password').val('');
+                                $msg.empty();
+                            }, 3000);
                         }
                     });
+                    setTimeout(function(){
+                        $('#logout').css("display","normal");
+                        $('#login').css("display","none");
+                        $('#login_user_name').val('');
+                        $('#login_password').val('');
+                        $msg.empty();
+                        $('#display_login_form').dialog('close');
+                    }, 2000);
                 }
-                setTimeout(function(){$('#display_login_form').dialog('close');}, 2000);
             },
             "Cancel": function () {
+                $('#login_user_name').val('');
+                $('#login_password').val('');
+                $msg.empty();
                 $(this).dialog('close');
             }
         }
@@ -187,15 +194,13 @@ $(document).ready(function(e) {
         $('#logout').css("display","none");
         $.ajax({
             url: url_add+'/logout',
-            type:'GET',
+            type:'POST',
             dataType: 'json',
             success: function (response) {
-
-                window.alert(response);
-
+                console.log("SUCCESS: logout: --- "+response.data);
             },
             error: function (error) {
-                console.log("");
+                console.log("FAILURE: logout: --- "+error.data);
             }
         });
     });

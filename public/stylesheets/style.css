@@ -198,7 +198,7 @@ Search box ends
 #display_register_form h2, #display_login_form h2{
   padding-top: 10px;
 }
-.response_msg p{
+.response_msg p, .response_msg h3{
   padding-top: 15px;
 }
 #display_register_form input, #display_login_form input{
