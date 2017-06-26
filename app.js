@@ -11,10 +11,12 @@ var secret = process.env.SESSION_SECRET || "ssshhhhh"
 app.use(session({
   secret: secret,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: { 
     secure: true,
-    maxAge: 60000 
+    maxAge: 24*60*60*1000,
+    //duration: 30 * 60 * 1000,
+    //activeDuration: 5 * 60 * 1000 
   }
 }));
 

@@ -3,10 +3,10 @@ var router = express.Router();
 var bodyParser = require('body-parser')
 
 var jsonParser = bodyParser.json()
-var path = require("path");
+//var path = require("path");
 
 var config  = require("../config/auth");
-var ssn = config.session;
+var ssn ;//= config.session;
 var models = require("../models");
 
 
@@ -28,12 +28,13 @@ router.post('/register',jsonParser,function(req, res, next){
     next();
   }
 
-},function(req,res,next){
+},function(req, res, next){
   //creates user in database
   var data = req.body
   models.users.findOrCreate({
     where: {
-      username: data.user
+      username: data.user,
+      password: data.pass
     },
     defaults: {
       username: data.user,
@@ -94,7 +95,9 @@ router.post('/login',jsonParser,function(req, res, next){
             ssn = req.session;
             ssn.user = data.user;
             ssn.pass = data.pass;
-            res.status(200).json({success: true, data: "yes"})
+
+            res.status(200).json({success: true, data: "yes"})    
+
         } else {
             res.status(500).json({success: false, data: "wrong username or password"})
         }
@@ -123,14 +126,14 @@ user cart and info routes
 // gets the row which has information about the user e.g username, password and whats in the users cart
 router.get('/user',function(req, res, next) {
     console.log(console.log(req.session.user));
-    var user = ssn.user;
+    var user = ssn;
 
-    if(user == null){
+    if(typeof user == 'undefined'){
         return res.status(500).json({success: false, data: "not logged on"});
     } else {
         next();
     }
-},function(req,res,next){
+},function(req, res, next){
   var user = ssn.user;
   models.users.findOne({
       where: {
@@ -153,8 +156,8 @@ router.get('/user',function(req, res, next) {
 
 //adds items to the cart of a particular user 
 router.put('/addtocart',jsonParser,function(res,req,next){
-  var user = ssn.user;
-  if(user == null){
+  var user = ssn;
+  if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(res.body.prodId == '' || res.body.amount == 0){
     return res.status(500).json({success: false, data: "no product to add to cart"});
@@ -162,40 +165,27 @@ router.put('/addtocart',jsonParser,function(res,req,next){
     next();
   }
 
-  /*var data = res.body;
-  client.query("UPDATE users SET cart = cart || '{$1} WHERE username=$3",[data.prodId,user], 
-  function(err, result) {
-      if (err) {
-        return res.status(500).json({success: false,data: err});
-      }
-      res.status(200).json({success: true,data: "updated cart"});
-  });*/
-},function(res,req,next){
+ 
+},function(req, res, next){
   var data = res.body;
   var user = ssn.user;
-  var tableName = user+"_cart"
-  models.get(tableName).findOrCreate({
-    where: {
-      product_id: data.user
-    },
-    defaults: {
-      product_id: data.prodId,
-      amount: data.amount
-    }
-  })
-  .then(function(result){
-    res.status(200).json({success: true,data: "updated cart"});
-  })
-  .catch(function(err){
-    res.status(500).json({success: false,data: err});
-  });
-  
+  var dbName = user+"_carts"
+
+  var query = "INSERT INTO "+dbName+" (product_id,amount) SELECT "+data.prodId+", "+data.amount+" FROM "+dbName+" WHERE not exists (select * from "+dbName+" where col1 = "+data.prodId+")LIMIT 1" 
+  models.sequelize.query(query)
+    .then(function(result){
+      
+      res.status(200).json({success: true, data: result})
+    })
+    .catch(function(err){
+      res.status(500).json({success: false, data: err})
+    })
 });
 
 //changes amount of certain product in cart
-router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
-  var user = ssn.user;
-  if(user == null){
+router.post('/user/cart/amount/:id',jsonParser,function(res,req,next){
+  var user = ssn;
+  if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(res.body.prodId == '' || req.params.id == '' || res.body.amount == 0){
     return res.status(500).json({success: false, data: "no product to add to cart"});
@@ -204,23 +194,28 @@ router.put('/user/cart/amount/:id',jsonParser,function(res,req,next){
   }
 
 
-},function (res,req,next) {
+},function (req, res, next) {
   var user = ssn.user;
   var data = res.body;
-/*  client.query("UPDATE "+user+"_cart SET amount = $1 WHERE product_id=$2",[data.prodId, req.params.id], 
-  function(err, result) {
-      if (err) {
-        return res.status(500).json({success: false,data: err});
-      }
-      res.status(200).json({success: true,data: "updated cart"});
-  });  */
+  var id = req.params.id;
+  
+  var dbName = user+"_carts";
 
+  var query = "UPDATE "+dbName+"SET amount = "+data.amount+" WHERE product_id="+id
+  models.sequelize.query(query)
+    .then(function(result){
+      
+      res.status(200).json({success: true, data: result})
+    })
+    .catch(function(err){
+      res.status(500).json({success: false, data: err})
+    })
 
 });
 
-router.get('/user/cart/:id',function(res,req,next){
-  var user = ssn.user;
-  if(user == null){
+router.get('/user/cart/:id',function(req, res, next){
+  var user = ssn;
+  if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(req.params.id == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
@@ -230,76 +225,80 @@ router.get('/user/cart/:id',function(res,req,next){
 
 },function(res,req,next){
   var user = ssn.user;
-  var query = client.query("SELECT * FROM "+user+"_cart WHERE product_id=$2",[req.params.id], 
-  function(err, result) {
-      if (err) {
-        return res.status(500).json({success: false,data: err});
-      }
-      
-  }); 
-  var user = [];
-  query.on('row', function(row) {
-    user.push(row);
-  });
-  // After all data is returned, return results
-  query.on('end', function() {
-    if (user.length == 0) {
-      res.status(500).json({success: false, data: "could not find product"});
-    }else {
-      res.json(user);
-    }
-  });  
+  var id = req.params.id;
+  var dbName = user+"_carts"
+
+  var query = "SELECT * FROM "+dbName+" WHERE product_id="+id
+  models.sequelize.query(query)
+    .then(function(result){
+      var h = result[1].fields
+      res.status(200).json(h)
+    })
+    .catch(function(err){
+      res.status(500).json({success: false, data: err})
+    })
+  
 });
 //gets the cart bases of the user 
-router.get('/user/cart',function(res,req,next){
-  var user = ssn.user;
-  if(user == null){
-    return res.status(500).json({success: false, data: "not logged on"});
+router.get('/user/cart',function(req, res, next){
+  var user = ssn;
+  
+  if(typeof user == 'undefined'){
+    res.status(500).json({success: false, data: "not logged on"});
   } else {
     next();
   }
 },function(req,res,next){
   var user = ssn.user;
-  var query = client.query("SELECT * FROM "+user+"_cart ", 
-  function(err, result) {
-      if (err) {
-        return res.status(500).json({success: false,data: err});
-      }
-      
-  }); 
-
-  var user = [];
-  query.on('row', function(row) {
-    user.push(row);
-  });
-  // After all data is returned, close connection and return results
-  query.on('end', function() {
-    res.json(user);
-  });
+  var dbName = user+"_carts"
+  var query = "SELECT * FROM "+dbName
+  models.sequelize.query(query)
+    .then(function(result){
+      var h = result[1].fields
+      res.status(200).json(result[0])
+    })
+    .catch(function(err){
+      res.status(500).json({success: false, data: err})
+    })
+  /*
+  models.Sequelize.model(dbName).findAll()
+    .then(function(result){
+      res.json(result);
+    })
+    .catch(function(err){
+      res.status(500).json({success: false,data: err});
+    });
+    */
 });
 
-router.delete('user/cart/delete/:id',function(res,req,next) {
-  var user = ssn.user;
+router.delete('user/cart/delete/:id',function(req, res, next) {
+  var user = ssn;
   var item = req.params.id
-  if(user == null){
+  if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(item == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
   }
 
 
-},function(res,req,next){
+},function(req, res, next){
   var user = ssn.user;
-  var item = req.params.id
-  client.query("DELETE FROM "+user+"_cart where product_id=$1",[item], 
-  function(err, result) {
-      if (err) {
-        return res.status(500).json({success: false,data: err});
-      } else {
-        res.status(200).json({success: true,data: "updated cart"});
-      }
-      
-  });
+  var id = req.params.id
+  var dbName = user+"_cart"
+  models.get(dbName).destroy({
+    where: {
+      product_id: id
+    }
+  }).then(function(result){
+    if(result > 0 ){
+      res.status(200).json({success: true, data: "delete product from cart"});
+    } else {
+      res.status(500).json({success: false, data: "did not delete product from cart"});
+    }
+  }).catch(function(err){
+    res.status(500).json({success: false, data: err});
+  })
+
 });
 
 /*
@@ -308,21 +307,35 @@ products  routes
 */
 
 //GET from product table
-router.get('/products',function(req,res){
-  //SQL Query>Select Data
-  var results = [];
 
-  var query = client.query('select * from products');
+router.get('/products',function(req, res, next){
+  models.products.findAll()
+    .then(function(result){
+      res.json(result);
+    }).catch(function(err){
+      res.status(500).json({success: false, data: err});
+    });
 
-  //Stream results back one row at a time
-  query.on('row',function(row){
-    results.push(row);
-  });
-  //After all data is returned, close connection and return results
-  query.on('end',function(row){
-//    client.end();
-    res.json(results);
-  });
+});
+
+//gets a certain product based off its id 
+router.get('/products/:id',function(req, res, next){
+  var id = req.params.id;
+  if (typeof id == 'undefined') {
+    res.status(500).json({success: false, data: "not logged on"});
+  } else {
+    next();
+  }
+},function(req, res, next){
+  var id = req.params.id;
+  models.products.findById(id)
+    .then(function(result){
+      res.status(200).json(result);
+    })
+    .catch(function(err){
+      res.status(500).json({success: false, data: err});
+    });
+
 });
 
 
