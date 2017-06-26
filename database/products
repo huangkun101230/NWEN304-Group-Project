@@ -1,5 +1,0 @@
- CREATE TABLE products (product_id  SERIAL PRIMARY KEY NOT NULL, product_name TEXT NOT NULL, product_des TEXT NOT NULL,price TEXT,in_stock INTEGER,picture_dir TEXT);
-
- 
- INSERT INTO products (product_name,product_des,price,in_stock,picture_dir) VALUES ('wori','tari',123,22,null);
- INSERT INTO products (product_name,product_des,price,in_stock,picture_dir) VALUES ('wori2','tari',1234,1,null);
