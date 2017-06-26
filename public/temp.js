@@ -81,7 +81,7 @@ $(document).ready(function(e) {
                         type: 'POST',
                         dataType: 'json',
                         contentType: "application/json",
-                        data: JSON.stringify( {user: user, pass:password}),
+                        data: JSON.stringify( {username: user, password:password}),
                         success: function (response) {
                             console.log("successfully add a new user!");
                             $display_register_form = $('#display_register_form');

@@ -26,7 +26,7 @@ router.get('/', function(req, res, next) {
 router.post('/register',jsonParser,function(req, res, next){
 
   var data = req.body
-  if (data == null || data.user == '' || data.pass == '') {
+  if (data == null || data.username == '' || data.password == '') {
     return res.status(500).json({success: false, data: "empty username or password"});
   } else {
     next();
@@ -35,7 +35,7 @@ router.post('/register',jsonParser,function(req, res, next){
 },
   passport.authenticate('local-signup', {
     successRedirect: '/',
-    failureRedirect: '/',
+    failureRedirect: '/register',
     failureFlash: true
   })
 );
