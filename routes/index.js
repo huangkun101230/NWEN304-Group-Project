@@ -94,7 +94,8 @@ router.post('/register',jsonParser,function(req, res, next){
   var data = req.body
   models.users.findOrCreate({
     where: {
-      username: data.user
+      username: data.user,
+      password: data.pass
     },
     defaults: {
       username: data.user,
