@@ -15,13 +15,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       type: DataTypes.STRING
     }
-  },{
-    facebook: {
-      id: String,
-      token: String,
-      email: String,
-      name: String
-    }
   }, {
     classMethods: {
       associate: function(models) {

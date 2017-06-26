@@ -16,7 +16,7 @@ $(document).ready(function(e) {
     function loadProducts(){
         $display_content = $('#display_content');
         $.ajax({
-            url: url_add+'/test_database',//may change this later for the according the serverside
+            url: url_add+'/products',//may change this later for the according the serverside
             type:'GET',
             dataType: 'json',
             success: function (products) {
@@ -168,7 +168,7 @@ $(document).ready(function(e) {
         $('#logout').css("display","none");
         $.ajax({
             url: url_add+'/logout',
-            type:'GET',
+            type:'POST',
             dataType: 'json',
             success: function (response) {
 
