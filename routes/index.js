@@ -86,7 +86,8 @@ router.post('/login',jsonParser,function(req, res, next){
     var data = req.body
     models.users.findOne({ 
         where: {
-            username: data.user
+            username: data.user,
+            password: data.pass
         } 
     }).then(function(user){
         if (user != null) {
@@ -312,7 +313,7 @@ router.get('/products',function(req,res){
   var results = [];
 
   var query = client.query('select * from products');
-    
+
   //Stream results back one row at a time
   query.on('row',function(row){
     results.push(row);

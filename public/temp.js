@@ -3,7 +3,7 @@ $(document).ready(function(e) {
     var url_add = 'http://localhost:8080';
     var isLoggedin = false;
     var isAdmin = false;
-    // var username = '';
+    var loggedin_user = '';
     // var password = '';
 // the nav "shop" is clicked
     $('#shop').click(function () {
@@ -21,14 +21,17 @@ $(document).ready(function(e) {
             type:'GET',
             dataType: 'json',
             success: function (products) {
+                var temp = JSON.parse(products);
+                console.log("this is the products from severside: "+temp);
                 $.each(products, function (i, product) {
                     $display_content.append(
-                        '<li class="products_list">'+
+                        '<li class="products_list" id=product.product_id>'+
                             '<img src="'+product.picture_dir+'" alt="'+product.product_name+'">'+
                             '<span class="products_des">'+
                                 '<h2>'+product.product_name+'</h2>'+
                                 '<p>'+product.product_des+'</p>'+
                                 '<p>&#36; '+product.price+'</p>'+
+                                '<p>product id: '+product.product_id+'</p>'+
                             '</span>'+
                             '<span class="add_cart"></span>' +
                         '</li>'
@@ -39,6 +42,8 @@ $(document).ready(function(e) {
                 }
             },
             error: function (error) {
+                //var temp = JSON.parse(error.responseText);
+                console.log("what is the error: "+temp);
                 console.log("Unsuccessful to load products from database");
             }
         });
@@ -100,7 +105,7 @@ $(document).ready(function(e) {
                                 $('#password').val('');
                                 $('#confirm_password').val('');
                                 $msg.empty();
-                            }, 3000);
+                            }, 4000);
                         }
                     });
                     setTimeout(function(){
@@ -165,7 +170,7 @@ $(document).ready(function(e) {
                                 $('#login_user_name').val('');
                                 $('#login_password').val('');
                                 $msg.empty();
-                            }, 3000);
+                            }, 4000);
                         }
                     });
                     setTimeout(function(){
@@ -197,6 +202,9 @@ $(document).ready(function(e) {
             type:'POST',
             dataType: 'json',
             success: function (response) {
+                isLoggedin = false;
+                loggedin_user = '';
+                //TODO may need to restore the admin infor aswell
                 console.log("SUCCESS: logout: --- "+response.data);
             },
             error: function (error) {
@@ -208,13 +216,13 @@ $(document).ready(function(e) {
 //To add to the cart when the button is clicked
     $('#display_content').on('click', '.add_cart', function () {
         $.ajax({
-            url: url_add+'/addToCart',
+            url: url_add+'/addtocart',
             type: 'POST',
             dataType: 'json',
             contentType: "application/json",
             data: JSON.stringify( {user: user, pass:password}),
             success: function (response) {
-
+                console.log("this ")
             },
             error: function(error){
 
@@ -224,31 +232,37 @@ $(document).ready(function(e) {
 
 //Shopping Cart
     $('#cart').click(function () {
-        $('#display_content').empty();
-        $display_content = $('#display_content');
-        $.ajax({
-            url: url_add+'/cart',//may change this later for the according the serverside
-            type:'GET',
-            dataType: 'json',
-            success: function (products) {
-                $.each(products, function (i, product) {
-                    $display_content.append(
-                        '<li class="products_list">'+
-                            '<img src="'+product.picture_dir+'" alt="'+product.product_name+'">'+
-                            '<span class="products_des">'+
-                                '<h2>'+product.product_name+'</h2>'+
-                                '<p>'+product.product_des+'</p>'+
-                                '<p>&#36; '+product.price+'</p>'+
-                            '</span>'+
-                            '<span class="add_cart"></span>' +
-                        '</li>'
-                    );
-                });
-            },
-            error: function (error) {
-                console.log("Unsuccessful to load products from cart database");
-            }
-        });
+        if(isLoggedin){
+            $('#display_content').empty();
+            $display_content = $('#display_content');
+            $.ajax({
+                url: url_add+'/cart',//may change this later for the according the serverside
+                type:'GET',
+                dataType: 'json',
+                success: function (products) {
+                    $.each(products, function (i, product) {
+                        $display_content.append(
+                            '<li class="products_list">'+
+                                '<img src="'+product.picture_dir+'" alt="'+product.product_name+'">'+
+                                '<span class="products_des">'+
+                                    '<h2>'+product.product_name+'</h2>'+
+                                    '<p>'+product.product_des+'</p>'+
+                                    '<p>&#36; '+product.price+'</p>'+
+                                '</span>'+
+                                '<span class="del_cart"><button name="delFromCart">Delete</button></span>' +
+                            '</li>'
+                        );
+                    });
+                },
+                error: function (error) {
+                    console.log("Unsuccessful to load products from cart database");
+                }
+            });
+        }
+        else{
+            console.log("only logged in user is able to open cart!");
+            window.alert("Please log in, before check out the cart!");
+        }
     });
 
 //Search the product
