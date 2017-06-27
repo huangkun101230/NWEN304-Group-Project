@@ -53,12 +53,11 @@ router.post('/login',jsonParser,function(req, res, next){
   } else {
     next();
   }
-},
-  passport.authenticate('local-login',{
+}, passport.authenticate('local-login',{
     successRedirect: '/',
-    failureRedirect: '/',
+    failureRedirect: '/login',
     failureFlash: true
-  })
+})
 );
 
 //logs out a user
@@ -67,12 +66,27 @@ router.post('/logout',jsonParser,function(req, res, next){
     if(err){
        next(err);
     } else{
-      res.status(200).json({success: true, data: "yes"})
+      res.redirect('/');
     }
   });
 
 });
 
+
+router.get('/user',function(req, res, next){
+  var data = {
+    user: req.user,
+    auth: req.isAuthenticated() 
+  }
+  res.status(200).json(data);
+});
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated())
+        return next();
+
+    res.redirect('/login');
+}
 
 // /*
 // user cart and info routes

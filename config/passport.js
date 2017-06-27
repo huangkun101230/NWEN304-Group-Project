@@ -6,18 +6,24 @@ var configAuth = require('./auth');
 
 module.exports = function(passport) {
 	passport.serializeUser(function(user, done){
-		done(null, user);	//save user.id in the session
+		done(null, user.id);	//save user.id in the session
 	});
 
 	passport.deserializeUser(function(id, done){
-      models.users.findById(id).then(function(user) {
+      models.users.findById(id)
+	  .then(function(user) {
         if(user){
-          done(null, user.get());
+
+          done(null, user.get({plain: true}));
         }
         else{
-          done(user.errors,null);
+          done(null,false,{message: "could not find user"});
         }
-      });
+      })
+	  .catch(function(err){
+		  console.log('did not deserializeUser '+err);
+		  done(null,false,err);
+	  });
 	});
 
 
@@ -80,16 +86,22 @@ module.exports = function(passport) {
 		process.nextTick(function(){
     		models.users.findOne({ 
         		where: {
-            		username: username
+            		username: username,
+					password: password
         		} 
-    		}).then(function(user){
+    		})
+			.then(function(user){
         		if (user != null) {
-					done(null, user);            
+					var userJson = user.get({plain: true});
+					done(null, userJson);            
         		} else {
         			done(null, false, {message:'wrong username or password'});
-        		}
-				
-			});
+        		}	
+			}) 
+			.catch(function(err){
+      			console.log("Error:",err);
+      			return done(null, false, { message: 'Something went wrong with your Signin' });
+   		 	});;
 		});
 	}));
 
