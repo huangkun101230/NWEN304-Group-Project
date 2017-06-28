@@ -193,7 +193,7 @@ router.post('/addtocart',jsonParser,function(req, res, next){
 });
 
 //changes amount of certain product in cart
-router.post('/user/cart/amount/:id',jsonParser,function(res,req,next){
+router.post('/user/cart/amount/:id',jsonParser,function(req, res, next){
   var user = ssn;
   if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
