@@ -19,6 +19,7 @@
   "homepage": "https://github.com/mrllama123/nwen304-project3-team-sweet#readme",
   "dependencies": {
     "body-parser": "^1.17.2",
+    "connect-session-sequelize": "^4.1.0",
     "express": "^4.15.3",
     "express-session": "^1.15.3",
     "faker": "^4.1.0",

@@ -20,7 +20,41 @@ app.use(session({
   }
 }));
 
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
+var env = process.env.ENVIRONMENT || "dev"
+var secret = process.env.SESSION_SECRET || "ssshhhhh"
+
+if (env == "dev") {
+    app.use(session({
+      secret: secret,
+      resave: false,
+      saveUninitialized: true,
+      store: new SequelizeStore({
+        db: models.sequelize
+      }),
+      cookie: { 
+        maxAge: 24*60*60*1000,
+        //duration: 30 * 60 * 1000,
+        //activeDuration: 5 * 60 * 1000 
+      }
+    }));
+} else {
+    app.use(session({
+      secret: secret,
+      resave: false,
+      saveUninitialized: true,
+      store: new SequelizeStore({
+        db: models.sequelize
+      }),
+      cookie: { 
+        secure: true,
+        maxAge: 24*60*60*1000,
+        //duration: 30 * 60 * 1000,
+        //activeDuration: 5 * 60 * 1000 
+      }
+    }));
+}
 
 
 
