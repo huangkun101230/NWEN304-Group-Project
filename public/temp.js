@@ -21,11 +21,11 @@ $(document).ready(function(e) {
             type:'GET',
             dataType: 'json',
             success: function (products) {
-                var temp = JSON.parse(products);
-                console.log("this is the products from severside: "+temp);
+                // var temp = JSON.parse(products);
+                // console.log("this is the products from severside: "+products);
                 $.each(products, function (i, product) {
                     $display_content.append(
-                        '<li class="products_list" id=product.product_id>'+
+                        '<li class="products_list" id="'+product.product_id+'">'+
                             '<img src="'+product.picture_dir+'" alt="'+product.product_name+'">'+
                             '<span class="products_des">'+
                                 '<h2>'+product.product_name+'</h2>'+
@@ -43,7 +43,7 @@ $(document).ready(function(e) {
             },
             error: function (error) {
                 //var temp = JSON.parse(error.responseText);
-                console.log("what is the error: "+temp);
+                console.log("what is the error: "+error);
                 console.log("Unsuccessful to load products from database");
             }
         });
@@ -90,15 +90,17 @@ $(document).ready(function(e) {
                         contentType: "application/json",
                         data: JSON.stringify( {user: user, pass:password}),
                         success: function (response) {
-                            var temp = JSON.parse(response.responseText);
-                            console.log(temp.data);
+                            // var temp = JSON.parse(response.responseText);
+                            // console.log(temp.data);
+                            console.log('success get response: '+response.data);
                             $msg.append('<h3 style="color: royalblue;">Successfully created a new user! welcome '+user+' !</h3>');
                         },
                         error: function(error){
-                            var temp = JSON.parse(error.responseText);
-                            console.log("Unsuccessful to add user "+temp.data);
-                            $msg.append('<p>'+temp.data+', Please try again!!</p>');
-                            console.log(error);
+                            // var temp = JSON.parse(error.responseText);
+                            // console.log("Unsuccessful to add user "+temp.data);
+                            console.log('unsuccess get error: '+error.data);
+
+                            $msg.append('<p>'+error.data+', Please try again!!</p>');
                             //stop the pop-up window to close for 3 seconds
                             setTimeout(function(){
                                 $('#user_name').val('');
@@ -159,13 +161,14 @@ $(document).ready(function(e) {
                             //var temp = JSON.parse(response);
                             console.log("successful to log-in -- "+response.data);
                             isLoggedin = true;
+                            $('.add_cart').append('<button name="addToCart">Add to cart</button>');
                             $msg.append('<h3 style="color: royalblue;">Successfully logged in as ' + username + ' !</h3>');
                         },
                         error: function (error) {
-                            var temp = JSON.parse(error.responseText);
-                            console.log("error: "+error);
-                            console.log("Unsuccessful to log-in -- "+temp.data);
-                            $msg.append('<p>'+ temp.data+'</p>');
+                            // var temp = JSON.parse(error.responseText);
+                            console.log("error: "+error.data);
+                            console.log("Unsuccessful to log-in -- "+error.data);
+                            $msg.append('<p>'+ error.data+'</p>');
                             setTimeout(function(){
                                 $('#login_user_name').val('');
                                 $('#login_password').val('');
@@ -215,17 +218,24 @@ $(document).ready(function(e) {
 
 //To add to the cart when the button is clicked
     $('#display_content').on('click', '.add_cart', function () {
+        $product_target = $(this).parents('li');
+        var p_id = $.trim($product_target.attr('id'));
+        var p_amount = 1;
+        console.log("product id: "+p_id+" amount: "+p_amount)
         $.ajax({
+            //TODO there has some problem connect with the severside
             url: url_add+'/addtocart',
             type: 'POST',
             dataType: 'json',
             contentType: "application/json",
-            data: JSON.stringify( {user: user, pass:password}),
+            data: JSON.stringify({prodId : p_id, amount : p_amount}),
             success: function (response) {
-                console.log("this ")
+                console.log("this product added to the user's cart!"+response.data);
             },
             error: function(error){
+                ///var temp = JSON.parse(error.responseText);
 
+                console.log("that is error when add to the cart: "+error.data);
             }
         });
     });
@@ -236,10 +246,11 @@ $(document).ready(function(e) {
             $('#display_content').empty();
             $display_content = $('#display_content');
             $.ajax({
-                url: url_add+'/cart',//may change this later for the according the serverside
+                url: url_add+'/user/cart',
                 type:'GET',
                 dataType: 'json',
                 success: function (products) {
+                    window.alert("enter to the user cart, but cart is currently empty.");
                     $.each(products, function (i, product) {
                         $display_content.append(
                             '<li class="products_list">'+
@@ -253,6 +264,7 @@ $(document).ready(function(e) {
                             '</li>'
                         );
                     });
+                    $display_content.append('<div style="padding: 10px 0 10px 800px; "><button name="placeOrder">Place the order</button></div>');
                 },
                 error: function (error) {
                     console.log("Unsuccessful to load products from cart database");
@@ -268,6 +280,7 @@ $(document).ready(function(e) {
 //Search the product
     $('#search a').click(function () {
         var search_content=$('#search input').val();
+        $display_content = $('#display_content');
         if($search_content !== '') {
             // window.alert($search_content);
             $.ajax({
@@ -275,11 +288,29 @@ $(document).ready(function(e) {
                 type: 'POST',
                 dataType: 'json',
                 contentType: "application/json",
-                data: JSON.stringify({product_name: search_content}),//TODO search for the product name
-                success: function (product) {
-                //found or not found
+                data: JSON.stringify({product_name: search_content}),
+                success: function (products) {
+                    $.each(products, function (i, product) {
+                        $display_content.append(
+                            '<li class="products_list" id="'+product.product_id+'">'+
+                            '<img src="'+product.picture_dir+'" alt="'+product.product_name+'">'+
+                            '<span class="products_des">'+
+                            '<h2>'+product.product_name+'</h2>'+
+                            '<p>'+product.product_des+'</p>'+
+                            '<p>&#36; '+product.price+'</p>'+
+                            '<p>product id: '+product.product_id+'</p>'+
+                            '</span>'+
+                            '<span class="add_cart"></span>' +
+                            '</li>'
+                        );
+                    });
+                    if(isLoggedin){
+                        $('.add_cart').append('<button name="addToCart">Add to cart</button>');
+                    }
                 },
                 error: function (error) {
+                    $display_content.append('<h3>This product is not found...</h3>');
+                    console.log("products not found..."+error);
 
                 }
             });

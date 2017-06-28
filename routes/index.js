@@ -15,7 +15,7 @@ var models = require("../models");
 router.get('/', function(req, res, next) {
   ssn = req.session;
   ssn.user;
-  ssn.pass; 
+  ssn.pass;
 });
 
 //registers a new user into database for the user_cart and users tables 
@@ -50,7 +50,7 @@ router.post('/register',jsonParser,function(req, res, next){
 },function(req, res, next){
   //creates user cart
   var data = req.body
-  var dbName = data.user+"_cart" 
+  var dbName = data.user+"_carts"
   models.sequelize.define(dbName,{
     id: {
       allowNull: false,
@@ -150,36 +150,61 @@ router.get('/user',function(req, res, next) {
 });
 
 
+//adds items to the cart of a particular user
+router.post('/addtocart',jsonParser,function(req, res, next){
+  console.log("this in here??");
+    var user = ssn;
+    if(typeof user == 'undefined'){
+        return res.status(500).json({success: false, data: "not logged on"});
+    } else if(req.body.prodId == '' || req.body.amount == 0){
+        return res.status(500).json({success: false, data: "no product to add to cart"});
+    } else {
+        next();
+    }
 
 
-
-
-//adds items to the cart of a particular user 
-router.put('/addtocart',jsonParser,function(res,req,next){
-  var user = ssn;
-  if(typeof user == 'undefined'){
-    return res.status(500).json({success: false, data: "not logged on"});
-  } else if(res.body.prodId == '' || res.body.amount == 0){
-    return res.status(500).json({success: false, data: "no product to add to cart"});
-  } else {
-    next();
-  }
-
- 
 },function(req, res, next){
-  var data = res.body;
-  var user = ssn.user;
-  var dbName = user+"_carts"
+    var data = req.body;
+    var user = ssn.user;
+    var dbName = user+"_carts"
 
-  var query = "INSERT INTO "+dbName+" (product_id,amount) SELECT "+data.prodId+", "+data.amount+" FROM "+dbName+" WHERE not exists (select * from "+dbName+" where col1 = "+data.prodId+")LIMIT 1" 
-  models.sequelize.query(query)
-    .then(function(result){
-      
-      res.status(200).json({success: true, data: result})
-    })
-    .catch(function(err){
-      res.status(500).json({success: false, data: err})
-    })
+
+    var querySelect = "SELECT product_id FROM "+dbName+" WHERE product_id = "+data.prodId
+    models.sequelize.query(querySelect)
+        .then(function(result){
+          console.log("result: " +result[1]);
+            var user = result[1].rows
+            if (user.length === 0) {
+                var queryInsert = "INSERT INTO "+dbName+" (product_id,amount) VALUES ("+data.prodId+","+data.amount+")"
+                models.sequelize.query(queryInsert)
+                    .then(function(result){
+                        res.status(200).json({success: true, data: result})
+                    })
+            } else {
+                res.status(200).json({success: false, data: "did not add user"})
+            }
+
+        })
+        .catch(function(err){
+            res.status(500).json({success: false, data: err})
+        })
+});
+
+router.get('/test',function(req, res, next){
+    var user = ssn.user;
+    var dbName = user+"_carts"
+
+
+    var querySelect = "SELECT product_id FROM "+dbName+" WHERE product_id = 1"
+    models.sequelize.query(querySelect)
+        .then(function(result){
+          var user = result[1].rows
+            res.status(200).json(user.length)
+
+        })
+        .catch(function(err){
+            res.status(500).json({success: false, data: err})
+        })
 });
 
 //changes amount of certain product in cart
