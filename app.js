@@ -7,16 +7,20 @@ var models = require('./models');
 var passport = require('passport');
 var flash = require('connect-flash');
 var models = require('./models');
+var bodyParser = require('body-parser');
 
 app.use(express.static('./public'));
+
+app.use(bodyParser.urlencoded({ extended: true }));
+ app.use(bodyParser.json());
 
 var secret = process.env.SESSION_SECRET || "ssshhhhh"
 app.use(session({
   secret: secret,
-  resave: false,
+  resave: true,
   saveUninitialized: true,
   cookie: { 
-    secure: true,
+    //secure: true,
     maxAge: 24*60*60*1000,
     //duration: 30 * 60 * 1000,
     //activeDuration: 5 * 60 * 1000 

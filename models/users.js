@@ -1,7 +1,7 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var users = sequelize.define('users', {
-    user_id: {
+    id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
