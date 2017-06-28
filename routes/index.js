@@ -190,25 +190,9 @@ router.post('/addtocart',jsonParser,function(req, res, next){
         })
 });
 
-router.get('/test',function(req, res, next){
-    var user = ssn.user;
-    var dbName = user+"_carts"
-
-
-    var querySelect = "SELECT product_id FROM "+dbName+" WHERE product_id = 1"
-    models.sequelize.query(querySelect)
-        .then(function(result){
-          var user = result[1].rows
-            res.status(200).json(user.length)
-
-        })
-        .catch(function(err){
-            res.status(500).json({success: false, data: err})
-        })
-});
 
 //changes amount of certain product in cart
-router.post('/user/cart/amount/:id',jsonParser,function(res,req,next){
+router.post('/user/cart/amount/:id',jsonParser,function(req, res, next){
   var user = ssn;
   if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
