@@ -234,12 +234,13 @@ $(document).ready(function(e) {
             // window.alert($search_content);
             $.ajax({
                 url: url_add + '/search',
-                type: 'POST',
+                type: 'GET',
                 dataType: 'json',
                 contentType: "application/json",
                 data: JSON.stringify({product_name: search_content}),//TODO search for the product name
                 success: function (product) {
                 //found or not found
+                
                 },
                 error: function (error) {
 
