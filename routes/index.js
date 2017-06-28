@@ -260,10 +260,10 @@ router.get('/user/cart',function(req, res, next){
 },function(req,res,next){
   var user = ssn.user;
   var dbName = user+"_carts"
-  var query = "SELECT * FROM "+dbName
+  var query = "SELECT * FROM "+dbName+ " INNER JOIN products ON  "+dbName+ ".product_id=products.product_id"
   models.sequelize.query(query)
     .then(function(result){
-      var h = result[1].fields
+      // var h = result[1].fields
       res.status(200).json(result[0])
     })
     .catch(function(err){

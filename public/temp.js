@@ -38,7 +38,7 @@ $(document).ready(function(e) {
                     );
                 });
                 if(isLoggedin){
-                    $('.add_cart').append('<button name="addToCart">Add to cart</button>');
+                    $('.add_cart').append('<button class="product_button" name="addToCart">Add to cart</button>');
                 }
             },
             error: function (error) {
@@ -161,7 +161,7 @@ $(document).ready(function(e) {
                             //var temp = JSON.parse(response);
                             console.log("successful to log-in -- "+response.data);
                             isLoggedin = true;
-                            $('.add_cart').append('<button name="addToCart">Add to cart</button>');
+                            $('.add_cart').append('<button class="product_button" name="addToCart">Add to cart</button>');
                             $msg.append('<h3 style="color: royalblue;">Successfully logged in as ' + username + ' !</h3>');
                         },
                         error: function (error) {
@@ -230,6 +230,7 @@ $(document).ready(function(e) {
             contentType: "application/json",
             data: JSON.stringify({prodId : p_id, amount : p_amount}),
             success: function (response) {
+                window.alert("this product is added to your cart!!")
                 console.log("this product added to the user's cart!"+response.data);
             },
             error: function(error){
@@ -241,6 +242,7 @@ $(document).ready(function(e) {
     });
 
 //Shopping Cart
+
     $('#cart').click(function () {
         if(isLoggedin){
             $('#display_content').empty();
@@ -250,7 +252,7 @@ $(document).ready(function(e) {
                 type:'GET',
                 dataType: 'json',
                 success: function (products) {
-                    window.alert("enter to the user cart, but cart is currently empty.");
+                    console.log("what is in products: "+products);
                     $.each(products, function (i, product) {
                         $display_content.append(
                             '<li class="products_list">'+
@@ -260,11 +262,11 @@ $(document).ready(function(e) {
                                     '<p>'+product.product_des+'</p>'+
                                     '<p>&#36; '+product.price+'</p>'+
                                 '</span>'+
-                                '<span class="del_cart"><button name="delFromCart">Delete</button></span>' +
+                                '<span class="del_cart"><button class="product_button" name="delFromCart">Delete</button></span>' +
                             '</li>'
                         );
                     });
-                    $display_content.append('<div style="padding: 10px 0 10px 800px; "><button name="placeOrder">Place the order</button></div>');
+                    $display_content.append('<div class="process_button_hold"><button class="process_button" name="placeOrder">Place the order</button></div>');
                 },
                 error: function (error) {
                     console.log("Unsuccessful to load products from cart database");
@@ -276,6 +278,8 @@ $(document).ready(function(e) {
             window.alert("Please log in, before check out the cart!");
         }
     });
+
+
 
 //Search the product
     $('#search a').click(function () {
@@ -305,7 +309,7 @@ $(document).ready(function(e) {
                         );
                     });
                     if(isLoggedin){
-                        $('.add_cart').append('<button name="addToCart">Add to cart</button>');
+                        $('.add_cart').append('<button class="product_button" name="addToCart">Add to cart</button>');
                     }
                 },
                 error: function (error) {
