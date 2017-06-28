@@ -12,6 +12,9 @@ var sequelize = new Sequelize(connectionUri,{
         max: 9,
         min: 0,
         idle: 10000
+    },
+    define: {
+      timestamps: false
     }
 });
 
