@@ -294,19 +294,20 @@ router.delete('user/cart/delete/:id',function(req, res, next) {
   var user = ssn.user;
   var id = req.params.id
   var dbName = user+"_cart"
-  models.get(dbName).destroy({
-    where: {
-      product_id: id
-    }
-  }).then(function(result){
-    if(result > 0 ){
-      res.status(200).json({success: true, data: "delete product from cart"});
+  var query = "DELETE FROM "+dbName+" WHERE product_id = "+id
+  models.sequelize.query(query)
+  .then(function(result){
+    var count = result[1].rowCount; 
+    if (count > 0) {
+      res.status(200).json({success: true,data: "successfully removed product"})
     } else {
-      res.status(500).json({success: false, data: "did not delete product from cart"});
+      res.status(500).json({success: false,data: "unsuccessfully removed product"})
     }
-  }).catch(function(err){
-    res.status(500).json({success: false, data: err});
   })
+  .catch(function(err){
+    res.status(500).json({success: false,data: err})
+  });
+
 
 });
 
