@@ -279,7 +279,23 @@ $(document).ready(function(e) {
         }
     });
 
-
+// Delete product from the user's cart
+    $('#display_content').on('click', '.del_cart', function () {
+        $product_target = $(this).parents('li');
+        var p_id = $.trim($product_target.attr('id'));
+        $.ajax({
+            url: url_add+'/user/cart/delete/${p_id}',
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json",
+            success: function (response) {
+                console.log("this product is deleted from user's cart: "+response.data);
+            },
+            error: function(error){
+                console.log("that is error when del from the cart: "+error.data);
+            }
+        });
+    });
 
 //Search the product
     $('#search a').click(function () {
