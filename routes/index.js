@@ -88,7 +88,6 @@ function isLoggedIn(req, res, next) {
     res.redirect('/login');
 }
 
-<<<<<<< Updated upstream
 // /*
 // user cart and info routes
 // ////////////////////////////////////////////////////////////////////////////////////
