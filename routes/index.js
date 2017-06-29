@@ -88,6 +88,7 @@ function isLoggedIn(req, res, next) {
     res.redirect('/login');
 }
 
+<<<<<<< Updated upstream
 // /*
 // user cart and info routes
 // ////////////////////////////////////////////////////////////////////////////////////
@@ -239,10 +240,12 @@ router.delete('/user/cart/delete/:id',function(req, res, next) {
 
 });
 
-// /*
-// products  routes
-// ////////////////////////////////////////////////////////////////////////////////////
-// */
+
+/*
+products  routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
+
 
 //GET from product table
 router.get('/products',function(req, res, next){
@@ -277,10 +280,12 @@ router.get('/products/:id',function(req, res, next){
 
 
 
-// /*
-// search products
-// ////////////////////////////////////////////////////////////////////////////////////
-// */
+
+/*
+search products
+////////////////////////////////////////////////////////////////////////////////////
+*/
+
 
 //Search from products
 router.get('/search',function(req, res){
@@ -293,8 +298,9 @@ router.get('/search',function(req, res){
  });
 
 //Facebook
-//Redirect the user to Facebook for authentication.
-router.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
+// Redirect the user to Facebook for authentication.
+// router.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
+router.get('/auth/facebook', passport.authenticate('facebook'));
 
 // Facebook will redirect the user to this URL after approval.
 router.get('/auth/facebook/callback',
