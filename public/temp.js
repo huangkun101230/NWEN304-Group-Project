@@ -255,7 +255,7 @@ $(document).ready(function(e) {
                     console.log("what is in products: "+products);
                     $.each(products, function (i, product) {
                         $display_content.append(
-                            '<li class="products_list">'+
+                            '<li class="products_list" id="'+product.product_id+'">'+
                                 '<img src="'+product.picture_dir+'" alt="'+product.product_name+'">'+
                                 '<span class="products_des">'+
                                     '<h2>'+product.product_name+'</h2>'+
@@ -282,17 +282,21 @@ $(document).ready(function(e) {
 // Delete product from the user's cart
     $('#display_content').on('click', '.del_cart', function () {
         $product_target = $(this).parents('li');
-        var p_id = $.trim($product_target.attr('id'));
+        var id = $product_target.attr('id');
+        console.log(id+"___product id...");
         $.ajax({
-            url: url_add+'/user/cart/delete/${p_id}',
-            type: 'POST',
+            url: url_add+'/user/cart/delete/'+id,
+            type: 'DELETE',
             dataType: 'json',
             contentType: "application/json",
             success: function (response) {
                 console.log("this product is deleted from user's cart: "+response.data);
+                $product_target.effect('drop', function () {
+                    $(this).remove();
+                });
             },
             error: function(error){
-                console.log("that is error when del from the cart: "+error.data);
+                console.log("that is error when del from the cart: "+error);
             }
         });
     });

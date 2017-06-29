@@ -280,20 +280,23 @@ router.get('/user/cart',function(req, res, next){
     */
 });
 
-router.delete('user/cart/delete/:id',function(req, res, next) {
+router.delete('/user/cart/delete/:id',function(req, res, next) {
   var user = ssn;
   var item = req.params.id
+    console.log("-------the product id: 'user/cart/delete/${id}' "+item);
   if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(item == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
   }
-
+  else {
+    next();
+  }
 
 },function(req, res, next){
   var user = ssn.user;
   var id = req.params.id
-  var dbName = user+"_cart"
+  var dbName = user+"_carts"
   var query = "DELETE FROM "+dbName+" WHERE product_id = "+id
   models.sequelize.query(query)
   .then(function(result){
