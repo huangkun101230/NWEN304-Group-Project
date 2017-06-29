@@ -298,8 +298,8 @@ router.get('/search',function(req, res){
 
 //Facebook
 // Redirect the user to Facebook for authentication.
-// router.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
-router.get('/auth/facebook', passport.authenticate('facebook'));
+router.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
+// router.get('/auth/facebook', passport.authenticate('facebook'));
 
 // Facebook will redirect the user to this URL after approval.
 router.get('/auth/facebook/callback',

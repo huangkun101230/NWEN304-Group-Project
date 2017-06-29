@@ -113,25 +113,61 @@ module.exports = function(passport) {
 	},
 	function(accessToken, refreshToken, profile, done) {
 	    process.nextTick(function(){
-	    	User.findOne({'facebook.id': profile.id}, function(err, user){
+	    	models.users.findOne({'users.fbid': profile.id}, function(err, user){
 	    		if(err)
 	    			return done(err);
 	    		if(user)
 	    			return done(null, user);
 	    		else {
-	    			var newUser = new User();
-	    			newUser.facebook.id = profile.id;
-	    			newUser.facebook.token = accessToken;
-	    			newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-	    			newUser.facebook.email = profile.emails[0].value;
+	    			// var newUser = new User();
+	    			// newUser.facebook.id = profile.id;
+	    			// newUser.facebook.token = accessToken;
+	    			// newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
+	    			// newUser.facebook.email = profile.emails[0].value;
 
-	    			newUser.save(function(err){
-	    				if(err)
-	    					throw err;
-	    				return done(null, newUser);
-	    			})
-	    			console.log(profile);
-	    		}
+	    			// newUser.save(function(err){
+	    			// 	if(err)
+	    			// 		throw err;
+	    			// 	return done(null, newUser);
+	    			// })
+	    			// console.log(profile);
+	    				models.users.create({
+						fbid: profile.id,
+						token: accessToken,
+						username: profile.name.givenName,
+						fbname: profile.name.givenName + ' ' + profile.name.familyName,
+						fbemail: profile.emails[0].value
+					})
+					.then(function(newUser){
+						if(!newUser){
+							return done(null,false,{message: "user was not created"});
+						} else{
+							//return done(null,newUser);
+							var dbName = username+"_cart" 
+							models.sequelize.define(dbName,{
+							id: {
+								allowNull: false,
+								autoIncrement: true,
+								primaryKey: true,
+								type: models.Sequelize.INTEGER
+							},
+							product_id: models.Sequelize.INTEGER,
+							amount: models.Sequelize.INTEGER
+							});
+							models.sequelize.sync()
+							.then(function(){
+								done(null,newUser);
+							})
+							.catch(function(err){
+								done(null, false, {message: err});
+							});
+						}
+					})
+					.catch(function(err){
+						return done(null,false,{message: err});
+					});
+				}
+	    		
 	    	});
 	    });
 	}));
