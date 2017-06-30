@@ -136,7 +136,7 @@ module.exports = function(passport) {
 						token: accessToken,
 						username: profile.name.givenName,
 						fbname: profile.name.givenName + ' ' + profile.name.familyName,
-						fbemail: profile.emails[0].value
+						username: profile.emails[0].value
 					})
 					.then(function(newUser){
 						if(!newUser){
