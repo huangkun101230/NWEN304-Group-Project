@@ -15,7 +15,7 @@ var models = require("../models");
 router.get('/', function(req, res, next) {
   ssn = req.session;
   ssn.user;
-  ssn.pass; 
+  ssn.pass;
 });
 
 //registers a new user into database for the user_cart and users tables 
@@ -23,7 +23,7 @@ router.post('/register',jsonParser,function(req, res, next){
 
   var data = req.body
   if (data == null || data.user == '' || data.pass == '') {
-    return res.status(500).json({success: false, data: "empty username or password"});
+      return res.status(500).json({success: false, data: "empty username or password"});
   } else {
     next();
   }
@@ -44,13 +44,13 @@ router.post('/register',jsonParser,function(req, res, next){
     if (created) {
       next();
     } else {
-      res.status(500).json({success: false, data: "already added user"});
+      res.status(500).json({success: false, data: "This user already exist"});
     }
   });
 },function(req, res, next){
   //creates user cart
   var data = req.body
-  var dbName = data.user+"_cart" 
+  var dbName = data.user+"_carts"
   models.sequelize.define(dbName,{
     id: {
       allowNull: false,
@@ -87,15 +87,17 @@ router.post('/login',jsonParser,function(req, res, next){
     var data = req.body
     models.users.findOne({ 
         where: {
-            username: data.user
+            username: data.user,
+            password: data.pass
         } 
     }).then(function(user){
         if (user != null) {
             ssn = req.session;
             ssn.user = data.user;
             ssn.pass = data.pass;
-            
+
             res.status(200).json({success: true, data: "yes"})    
+
         } else {
             res.status(500).json({success: false, data: "wrong username or password"})
         }
@@ -148,10 +150,6 @@ router.get('/user',function(req, res, next) {
 });
 
 
-
-
-
-
 //adds items to the cart of a particular user
 router.post('/addtocart',jsonParser,function(req, res, next){
   console.log("this in here??");
@@ -191,6 +189,7 @@ router.post('/addtocart',jsonParser,function(req, res, next){
             res.status(500).json({success: false, data: err})
         })
 });
+
 
 //changes amount of certain product in cart
 router.post('/user/cart/amount/:id',jsonParser,function(req, res, next){
@@ -261,10 +260,10 @@ router.get('/user/cart',function(req, res, next){
 },function(req,res,next){
   var user = ssn.user;
   var dbName = user+"_carts"
-  var query = "SELECT * FROM "+dbName
+  var query = "SELECT * FROM "+dbName+ " INNER JOIN products ON  "+dbName+ ".product_id=products.product_id"
   models.sequelize.query(query)
     .then(function(result){
-      var h = result[1].fields
+      // var h = result[1].fields
       res.status(200).json(result[0])
     })
     .catch(function(err){
@@ -281,20 +280,23 @@ router.get('/user/cart',function(req, res, next){
     */
 });
 
-router.delete('user/cart/delete/:id',function(req, res, next) {
+router.delete('/user/cart/delete/:id',function(req, res, next) {
   var user = ssn;
   var item = req.params.id
+    console.log("-------the product id: 'user/cart/delete/${id}' "+item);
   if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(item == null){
     return res.status(500).json({success: false, data: "no product to add to cart"});
   }
-
+  else {
+    next();
+  }
 
 },function(req, res, next){
   var user = ssn.user;
   var id = req.params.id
-  var dbName = user+"_cart"
+  var dbName = user+"_carts"
   var query = "DELETE FROM "+dbName+" WHERE product_id = "+id
   models.sequelize.query(query)
   .then(function(result){
@@ -318,6 +320,7 @@ products  routes
 */
 
 //GET from product table
+
 router.get('/products',function(req, res, next){
   models.products.findAll()
     .then(function(result){
@@ -345,6 +348,7 @@ router.get('/products/:id',function(req, res, next){
     .catch(function(err){
       res.status(500).json({success: false, data: err});
     });
+
 });
 
 
