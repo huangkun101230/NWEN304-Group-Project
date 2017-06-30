@@ -198,7 +198,7 @@ Search box ends
 #display_register_form h2, #display_login_form h2{
   padding-top: 10px;
 }
-.response_msg p{
+.response_msg p, .response_msg h3{
   padding-top: 15px;
 }
 #display_register_form input, #display_login_form input{
@@ -228,4 +228,36 @@ color: #fff;
 background-color: grey;
 }
 
+
+/*-----------buttons style-------------*/
+.product_button, .process_button {
+  display: inline-block;
+  padding: 8px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+}
+.process_button {
+  background-color: green;
+  font-size: 20px;
+  padding: 10px 14px;
+}
+.process_button_hold{
+  border-top: #666666 2px solid;
+  padding: 20px 0 10px 800px;
+}
+.product_button:hover, .process_button:hover{background-color: #3e8e41}
+
+.product_button:active, .process_button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+/*-----------buttons style ends-------------*/
 /*content layout ends*/

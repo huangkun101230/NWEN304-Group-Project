@@ -202,7 +202,7 @@ router.get('/user/cart',function(req, res, next){
 },function(req, res, next){
   var user = req.user.username;
   var dbName = user+"_carts"
-  var query = "SELECT * FROM "+dbName
+  var query = "SELECT * FROM "+dbName+ " INNER JOIN products ON  "+dbName+ ".product_id=products.product_id"
   models.sequelize.query(query)
     .then(function(result){
       res.status(200).json(result[0])
@@ -215,6 +215,7 @@ router.get('/user/cart',function(req, res, next){
 router.delete('/user/cart/delete/:id',function(req, res, next) {
   var user = req.user;
   var item = req.params.id
+    console.log("-------the product id: 'user/cart/delete/${id}' "+item);
   if(typeof user == 'undefined'){
     return res.status(500).json({success: false, data: "not logged on"});
   } else if(typeof item == 'undefined'){
@@ -251,6 +252,7 @@ products  routes
 
 
 //GET from product table
+
 router.get('/products',function(req, res, next){
   models.products.findAll()
     .then(function(result){
@@ -278,6 +280,7 @@ router.get('/products/:id',function(req, res, next){
     .catch(function(err){
       res.status(500).json({success: false, data: err});
     });
+
 });
 
 
