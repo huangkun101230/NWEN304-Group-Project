@@ -236,6 +236,10 @@ router.delete('/user/cart/delete/:id',function(req, res, next) {
       res.status(500).json({success: false,data: "unsuccessfully removed product"})
     }
   })
+  .catch(function(err){
+    res.status(500).json({success: false,data: err})
+  });
+
 
 });
 
