@@ -1,7 +1,7 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var users = sequelize.define('users', {
-    user_id: {
+    id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
@@ -12,8 +12,17 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING
     },
     password: {
-      allowNull: false,
+      //allowNull: false,
       type: DataTypes.STRING
+    },
+    fbid:{
+      type: DataTypes.STRING
+    },
+    token:{
+      type:DataTypes.STRING
+    },
+    fbname:{
+      type:DataTypes.STRING
     }
   }, {
     classMethods: {

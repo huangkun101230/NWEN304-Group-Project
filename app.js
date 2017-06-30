@@ -2,24 +2,36 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 8080;
 var faker = require('faker');
-var session = require('express-session');
+var session = require('express-session'); 
 var models = require('./models');
+var passport = require('passport');
+var flash = require('connect-flash');
+var models = require('./models');
+var bodyParser = require('body-parser');
 
 app.use(express.static('./public'));
+
+app.use(bodyParser.urlencoded({ extended: true }));
+ app.use(bodyParser.json());
 
 var secret = process.env.SESSION_SECRET || "ssshhhhh"
 app.use(session({
   secret: secret,
-  resave: false,
+  resave: true,
   saveUninitialized: true,
   cookie: { 
-    secure: true,
+    //secure: true,
     maxAge: 24*60*60*1000,
     //duration: 30 * 60 * 1000,
     //activeDuration: 5 * 60 * 1000 
   }
 }));
 
+require('./config/passport')(passport);
+
+app.use(passport.initialize());
+app.use(passport.session());  //persistent login sessions
+app.use(flash()); //use connect-flash for flash messages stored in session
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 var env = process.env.ENVIRONMENT || "dev"
@@ -57,8 +69,7 @@ if (env == "dev") {
 }
 
 
-
-app.use(require('./routes/index'));
+app.use(require('./routes/index')(passport));
 
 
 models.sequelize.sync().then(function () {

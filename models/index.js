@@ -1,22 +1,23 @@
-"use strict";
+'use strict';
+
 var fs        = require('fs');
 var path      = require('path');
 var Sequelize = require('sequelize');
 var basename  = path.basename(module.filename);
 var db        = {};
-var connectionString = process.env.DATABASE_URL || "postgres://root@localhost:5432/shopping";
-var sequelize = new Sequelize(connectionString,{
-    pool: {
-    max: 5,
-    min: 0,
-    idle: 10000
-  },
-  define: {
-    timestamps: false
-  }
+
+var connectionUri = process.env.DATABASE_URL || "postgres://root@localhost:5432/shopping";
+var sequelize = new Sequelize(connectionUri,{
+      pool: {
+        max: 9,
+        min: 0,
+        idle: 10000
+    },
+    define: {
+      timestamps: false
+    }
 });
 
-// scan though the models and add the table to the database 
 fs
   .readdirSync(__dirname)
   .filter(function(file) {
