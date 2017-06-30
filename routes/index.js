@@ -287,10 +287,10 @@ search products
 
 
 //Search from products
-router.get('/search',function(req, res){
+router.post('/search',function(req, res){
+  var name = req.body.product_name;
     models.products.findOne({
-      where: {products_name: req},
-      attributes: ['id', ['name','products_name']]
+      where: {product_name: name}
     }).then(function(results){
       res.json(results);
     });
