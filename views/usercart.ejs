@@ -2,14 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sweet shopping site</title>
-
+    <title>Login Page</title>
     <link rel="stylesheet" href="stylesheets/style.css"/>
-    <link rel="stylesheet" href="stylesheets/jquery-ui.min.css"/>
     <script src="js/jquery.min.js"></script>
     <script src="js/jquery-ui.min.js"></script>
-        <script src="userCart.js"></script>
-    <!--<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/jquery.validate.min.js"></script>-->
+    <script src="userCart.js"></script>
 </head>
 <body>
     <div id="header">
@@ -29,7 +26,7 @@
                 <li><a id="shop" href="/shop"><h2>Shop</h2></a></li>
                 <li><a id="about_us" href="#"><h2>About Us</h2></a></li>
                 <% if (login) { %>
-                <li><a id="logout" href="/logout"><h2>Log out</h2></a></li>
+                <li><a id="logout" href="/logout" ><h2>Log out</h2></a></li>
                 <% } else { %> 
                 <li><a id="login" href="/login" ><h2>Log In</h2></a></li>
                 <li><a id="register" href="/register"><h2>Register</h2></a></li>
@@ -44,15 +41,19 @@
             </ul>
         </div>
     </div>
-    <div id="content">
-        <div id="page_heading"><h3>Welcome to The sweet shopping site</h3></div>
-
-        <ul id="display_content">
-
-        </ul>
-
-    </div>
-
-
+    <% for(var i=0; i < products.length; i++) { %>
+    <br>
+    <li class="products_list" id="<%- products[i].product_id -%>">
+        <img src="<%- products[i].picture_dir -%>" alt="<%- products[i].product_name -%>">
+        <span class="products_des">
+            <h2><%- products[i].product_name -%></h2>
+            <p>&#36; <%- products[i].price -%></p>
+            <p><%- products[i].product_des -%></p>
+            <p>&#36; <%- products[i].price -%></p>
+            <p>product id: <%- products[i].product_id -%></p>
+        </span>
+        <span class="del_cart">
+            <button class="del_button" name="delFromCart">Delete</button>
+        </span>
+    <% } %>
 </body>
-</html>

@@ -86,6 +86,7 @@ models.sequelize.sync().then(function () {
         row['product_des'] =  faker.lorem.sentences();
         row['price'] = faker.commerce.price(); 
         row['in_stock'] = faker.random.number();
+        row['picture_dir'] = faker.image.image()
         rows.push(row);
       }
       products.bulkCreate(rows);      

@@ -40,6 +40,35 @@ router.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/');
 });
+
+router.get('/shop', function(req, res){
+    models.products.findAll()
+    .then(function(result){
+      //res.json(result);
+      res.render('shop.ejs',{
+        login: req.isAuthenticated(),
+        products: result
+      })
+    }).catch(function(err){
+      res.status(500).json({success: false, data: err});
+    });
+});
+
+router.get('/usercart',isLoggedIn,function(req, res){
+  var user = req.user.username;
+  var dbName = user+"_carts"
+  var query = "SELECT * FROM "+dbName+ " INNER JOIN products ON  "+dbName+ ".product_id=products.product_id"
+  models.sequelize.query(query)
+  .then(function(result){
+    res.render('usercart.ejs',{
+      login: req.isAuthenticated(),
+      products: result[0]
+    });
+  })
+  .catch(function(err){
+    res.status(500).json({success: false, data: err})
+  })
+});
 /*
 register routes
 ////////////////////////////////////////////////////////////////////////////////////
@@ -105,12 +134,7 @@ router.get('/user',function(req, res, next){
   res.status(200).json(data);
 });
 
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated())
-        return next();
 
-    res.redirect('/login');
-}
 
 // /*
 // user cart and info routes
@@ -337,5 +361,12 @@ router.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/',
                                       failureRedirect: '/login' }));
 
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated())
+        return next();
+
+    res.redirect('/login');
+}
   return router;
 }
