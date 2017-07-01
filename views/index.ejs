@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sweet shopping site</title>
+
+    <link rel="stylesheet" href="stylesheets/style.css"/>
+    <link rel="stylesheet" href="stylesheets/jquery-ui.min.css"/>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+        <script src="userCart.js"></script>
+    <!--<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/jquery.validate.min.js"></script>-->
+</head>
+<body>
+    <div id="header">
+        <div id="banner">
+            <h1>The sweet shopping site</h1>
+            <span>
+                <a id="cart" href="/usercart">
+                    <img src="img/shopping_cart.png">
+                    <p>Cart:</p>
+                </a>
+            </span>
+        </div>
+
+        <div class="container">
+            <ul id="nav">
+                <li><a id="home" href="/"><h2>Home</h2></a></li>
+                <li><a id="shop" href="/shop"><h2>Shop</h2></a></li>
+                <li><a id="about_us" href="#"><h2>About Us</h2></a></li>
+                <% if (login) { %>
+                <li><a id="logout" href="/logout"><h2>Log out</h2></a></li>
+                <% } else { %> 
+                <li><a id="login" href="/login" ><h2>Log In</h2></a></li>
+                <li><a id="register" href="/register"><h2>Register</h2></a></li>
+                <% } %>
+                <li id="search" class="right">
+                    <form>
+                        <a>Search</a>
+                        <input type="text" name="Search" placeholder="Search here..."/>
+                    </form>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <div id="content">
+        <div id="page_heading"><h3>Welcome to The sweet shopping site</h3></div>
+
+        <ul id="display_content">
+
+        </ul>
+
+    </div>
+
+
+</body>
+</html>
