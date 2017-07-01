@@ -17,10 +17,62 @@ var models = require("../models");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  // ssn = req.session;
-  // ssn.user;
-  // ssn.pass; 
+  var auth = req.isAuthenticated();
+  res.render('index.ejs',{
+    login: auth
+  });
 });
+
+router.get('/login',function(req, res, next){
+  res.render('login.ejs',{
+    login: req.isAuthenticated()
+  });
+});
+
+router.get('/register',function(req, res, next){
+  res.render('register.ejs',{
+    login: req.isAuthenticated()
+  });
+});
+
+
+router.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+});
+
+router.get('/shop', function(req, res){
+    models.products.findAll()
+    .then(function(result){
+      //res.json(result);
+      res.render('shop.ejs',{
+        login: req.isAuthenticated(),
+        products: result
+      })
+    }).catch(function(err){
+      res.status(500).json({success: false, data: err});
+    });
+});
+
+router.get('/usercart',isLoggedIn,function(req, res){
+  var user = req.user.username;
+  var dbName = user+"_carts"
+  var query = "SELECT * FROM "+dbName+ " INNER JOIN products ON  "+dbName+ ".product_id=products.product_id"
+  models.sequelize.query(query)
+  .then(function(result){
+    res.render('usercart.ejs',{
+      login: req.isAuthenticated(),
+      products: result[0]
+    });
+  })
+  .catch(function(err){
+    res.status(500).json({success: false, data: err})
+  })
+});
+/*
+register routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
 
 //registers a new user into database for the user_cart and users tables 
 router.post('/register',jsonParser,function(req, res, next){
@@ -29,6 +81,7 @@ router.post('/register',jsonParser,function(req, res, next){
   if (data == null || data.username == '' || data.password == '') {
     return res.status(500).json({success: false, data: "empty username or password"});
   } else {
+    console.log("This works :)");
     next();
   }
 
@@ -81,12 +134,7 @@ router.get('/user',function(req, res, next){
   res.status(200).json(data);
 });
 
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated())
-        return next();
 
-    res.redirect('/login');
-}
 
 // /*
 // user cart and info routes
@@ -313,5 +361,12 @@ router.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/',
                                       failureRedirect: '/login' }));
 
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated())
+        return next();
+
+    res.redirect('/login');
+}
   return router;
 }

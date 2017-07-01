@@ -12,26 +12,24 @@ var bodyParser = require('body-parser');
 app.use(express.static('./public'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
- app.use(bodyParser.json());
+app.use(bodyParser.json());
 
-var secret = process.env.SESSION_SECRET || "ssshhhhh"
-app.use(session({
-  secret: secret,
-  resave: true,
-  saveUninitialized: true,
-  cookie: { 
-    //secure: true,
-    maxAge: 24*60*60*1000,
-    //duration: 30 * 60 * 1000,
-    //activeDuration: 5 * 60 * 1000 
-  }
-}));
+app.set('view engine', 'ejs'); // set up ejs for templating
 
 require('./config/passport')(passport);
 
-app.use(passport.initialize());
-app.use(passport.session());  //persistent login sessions
-app.use(flash()); //use connect-flash for flash messages stored in session
+app.use(function (req, res, next) {
+ // Website you wish to allow to connect
+	res.setHeader('Access-Control-Allow-Origin', '*')
+ // // Request methods you wish to allow
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH,DELETE');
+ // Request headers you wish to allow ,
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-AllowHeaders');
+ // Pass to next layer of middleware
+	next();
+});
+
+
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 var env = process.env.ENVIRONMENT || "dev"
@@ -68,6 +66,9 @@ if (env == "dev") {
     }));
 }
 
+app.use(passport.initialize());
+app.use(passport.session());  //persistent login sessions
+app.use(flash()); //use connect-flash for flash messages stored in session
 
 app.use(require('./routes/index')(passport));
 
@@ -85,6 +86,7 @@ models.sequelize.sync().then(function () {
         row['product_des'] =  faker.lorem.sentences();
         row['price'] = faker.commerce.price(); 
         row['in_stock'] = faker.random.number();
+        row['picture_dir'] = faker.image.image()
         rows.push(row);
       }
       products.bulkCreate(rows);      
