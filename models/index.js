@@ -5,7 +5,7 @@ var path      = require('path');
 var Sequelize = require('sequelize');
 var basename  = path.basename(module.filename);
 var db        = {};
-var connectionString = process.env.DATABASE_URL || "postgres://yaoyucui@localhost:5432/shopping";
+var connectionString = process.env.DATABASE_URL || "postgres://root@localhost:5432/shopping";
 var sequelize = new Sequelize(connectionString,{
     pool: {
     max: 5,

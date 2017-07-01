@@ -17,10 +17,33 @@ var models = require("../models");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  // ssn = req.session;
-  // ssn.user;
-  // ssn.pass; 
+  var auth = req.isAuthenticated();
+  res.render('index.ejs',{
+    login: auth
+  });
 });
+
+router.get('/login',function(req, res, next){
+  res.render('login.ejs',{
+    login: req.isAuthenticated()
+  });
+});
+
+router.get('/register',function(req, res, next){
+  res.render('register.ejs',{
+    login: req.isAuthenticated()
+  });
+});
+
+
+router.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+});
+/*
+register routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
 
 //registers a new user into database for the user_cart and users tables 
 router.post('/register',jsonParser,function(req, res, next){
@@ -29,6 +52,7 @@ router.post('/register',jsonParser,function(req, res, next){
   if (data == null || data.username == '' || data.password == '') {
     return res.status(500).json({success: false, data: "empty username or password"});
   } else {
+    console.log("This works :)");
     next();
   }
 
