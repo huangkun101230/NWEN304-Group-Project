@@ -25,6 +25,7 @@
     "express": "^4.15.3",
     "express-session": "^1.15.3",
     "faker": "^4.1.0",
+    "heroku-ssl-redirect": "0.0.4",
     "install": "^0.10.1",
     "node-pre-gyp": "^0.6.36",
     "nodemon": "^1.11.0",

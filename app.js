@@ -8,6 +8,7 @@ var passport = require('passport');
 var flash = require('connect-flash');
 var models = require('./models');
 var bodyParser = require('body-parser');
+var sslRedirect = require('heroku-ssl-redirect');
 
 app.use(express.static('./public'));
 
@@ -50,6 +51,7 @@ if (env == "dev") {
       }
     }));
 } else {
+  app.set(sslRedirect())
   app.set('trust proxy', 1)
   app.use(session({
     secret: secret,
