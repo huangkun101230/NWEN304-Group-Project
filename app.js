@@ -50,20 +50,21 @@ if (env == "dev") {
       }
     }));
 } else {
-    app.use(session({
-      secret: secret,
-      resave: false,
-      saveUninitialized: true,
-      store: new SequelizeStore({
-        db: models.sequelize
-      }),
-      cookie: { 
-        secure: true,
-        maxAge: 24*60*60*1000,
-        //duration: 30 * 60 * 1000,
-        //activeDuration: 5 * 60 * 1000 
-      }
-    }));
+  app.set('trust proxy', 1)
+  app.use(session({
+    secret: secret,
+    resave: false,
+    saveUninitialized: true,
+    store: new SequelizeStore({
+      db: models.sequelize
+    }),
+    cookie: { 
+      secure: true,
+      maxAge: 24*60*60*1000,
+      //duration: 30 * 60 * 1000,
+      //activeDuration: 5 * 60 * 1000 
+    }
+  }));
 }
 
 app.use(passport.initialize());
