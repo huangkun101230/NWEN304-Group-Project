@@ -23,6 +23,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     fbname:{
       type:DataTypes.STRING
+    },
+    admin:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   }, {
     classMethods: {

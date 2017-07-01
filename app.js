@@ -36,6 +36,7 @@ var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 var env = process.env.ENVIRONMENT || "dev"
 var secret = process.env.SESSION_SECRET || "ssshhhhh"
+var adminPass = process.env.ADMIN_PASS || '123'
 
 if (env == "dev") {
     app.use(session({
@@ -89,6 +90,13 @@ models.sequelize.sync().then(function () {
       }
       products.bulkCreate(rows);      
     }
+
+    var user = models.users.create({
+      username: 'admin',
+      password: adminPass,
+      admin: true
+    })
+
   });
 
 

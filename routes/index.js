@@ -22,6 +22,13 @@ router.get('/', function(req, res, next) {
   // ssn.pass; 
 });
 
+/*
+register routes
+////////////////////////////////////////////////////////////////////////////////////
+*/
+
+
+
 //registers a new user into database for the user_cart and users tables 
 router.post('/register',jsonParser,function(req, res, next){
 
