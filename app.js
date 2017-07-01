@@ -55,10 +55,10 @@ if (env == "dev") {
     secret: secret,
     resave: false,
     saveUninitialized: true,
-    proxy : true,
     store: new SequelizeStore({
       db: models.sequelize
     }),
+    proxy : true,
     cookie: { 
       secure: true,
       maxAge: 24*60*60*1000,
