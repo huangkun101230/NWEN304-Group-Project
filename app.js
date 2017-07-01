@@ -55,6 +55,7 @@ if (env == "dev") {
     secret: secret,
     resave: false,
     saveUninitialized: true,
+    proxy : true,
     store: new SequelizeStore({
       db: models.sequelize
     }),
