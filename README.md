@@ -1,6 +1,24 @@
 # nwen304-project3-team-sweet
 this holds an simple e-commerce website written in node + express + postgres
 
+
+<!-- TOC -->
+
+- [nwen304-project3-team-sweet](#nwen304-project3-team-sweet)
+- [how to run on a local dev machine](#how-to-run-on-a-local-dev-machine)
+    - [database](#database)
+    - [server](#server)
+- [api endpoints](#api-endpoints)
+    - [user login and auth](#user-login-and-auth)
+    - [user cart api](#user-cart-api)
+    - [products api](#products-api)
+    - [api curl requests](#api-curl-requests)
+- [database schema](#database-schema)
+    - [users](#users)
+    - [(user)_cart](#user_cart)
+    - [products](#products)
+
+<!-- /TOC -->
 # how to run on a local dev machine 
 
 ##  database
@@ -108,6 +126,8 @@ curl -X POST \
   -H 'postman-token: 3fe472e3-5b39-fa46-d3a3-5ee2a10db124' \
   -d '{"prodId":1,"amount":1}'
 ```
+
+
 # database schema 
 
 ## users
