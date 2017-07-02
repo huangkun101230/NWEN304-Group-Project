@@ -1,6 +1,6 @@
 # nwen304-project3-team-sweet
-this holds an simple e-commerce website written in node + express + postgres
-
+this holds an simple e-commerce website written in node + express + postgres which
+has a heroku deployment: [quiet-cove-52767.herokuapp.com](https://quiet-cove-52767.herokuapp.com/)
 
 <!-- TOC -->
 

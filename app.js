@@ -8,6 +8,7 @@ var passport = require('passport');
 var flash = require('connect-flash');
 var models = require('./models');
 var bodyParser = require('body-parser');
+//var sslRedirect = require('heroku-ssl-redirect');
 
 app.use(express.static('./public'));
 
@@ -17,7 +18,7 @@ app.use(bodyParser.json());
 app.set('view engine', 'ejs'); // set up ejs for templating
 
 require('./config/passport')(passport);
-
+/*
 app.use(function (req, res, next) {
  // Website you wish to allow to connect
 	res.setHeader('Access-Control-Allow-Origin', '*')
@@ -27,7 +28,7 @@ app.use(function (req, res, next) {
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-AllowHeaders');
  // Pass to next layer of middleware
 	next();
-});
+});*/
 
 
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -51,20 +52,31 @@ if (env == "dev") {
       }
     }));
 } else {
-    app.use(session({
-      secret: secret,
-      resave: false,
-      saveUninitialized: true,
-      store: new SequelizeStore({
-        db: models.sequelize
-      }),
-      cookie: { 
-        secure: true,
-        maxAge: 24*60*60*1000,
-        //duration: 30 * 60 * 1000,
-        //activeDuration: 5 * 60 * 1000 
+  //app.set(sslRedirect())
+  app.use(function (req, res, next){
+      if (req.headers['x-forwarded-proto'] != 'https') {
+        res.redirect(status, 'https://' + req.hostname + req.originalUrl);
       }
-    }));
+      else {
+        next();
+      }
+  });
+  app.set('trust proxy', 1)
+  app.use(session({
+    secret: secret,
+    resave: false,
+    saveUninitialized: true,
+    store: new SequelizeStore({
+      db: models.sequelize
+    }),
+    proxy : true,
+    cookie: { 
+      secure: true,
+      maxAge: 24*60*60*1000,
+      //duration: 30 * 60 * 1000,
+      //activeDuration: 5 * 60 * 1000 
+    }
+  }));
 }
 
 app.use(passport.initialize());
