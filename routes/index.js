@@ -45,6 +45,7 @@ router.get('/shop', function(req, res){
     models.products.findAll()
     .then(function(result){
       //res.json(result);
+      res.setHeader('Cache-Control', 'public, max-age=43200');
       res.render('shop.ejs',{
         login: req.isAuthenticated(),
         products: result
@@ -304,6 +305,7 @@ products  routes
 router.get('/products',function(req, res, next){
   models.products.findAll()
     .then(function(result){
+      res.setHeader('Cache-Control', 'public, max-age=43200');
       res.json(result);
     }).catch(function(err){
       res.status(500).json({success: false, data: err});
