@@ -56,7 +56,7 @@ router.get('/shop', function(req, res){
 
 router.get('/usercart',isLoggedIn,function(req, res){
   var user = req.user.username;
-  var dbName = user+"_carts"
+  var dbName = "cart_"+user+"s"
   var query = "SELECT * FROM "+dbName+ " INNER JOIN products ON  "+dbName+ ".product_id=products.product_id"
   models.sequelize.query(query)
   .then(function(result){
@@ -159,7 +159,7 @@ router.post('/addtocart',jsonParser,function(req, res, next){
 },function(req, res, next){
     var data = req.body;
     var user = req.user.username;
-    var dbName = user+"_carts"
+    var dbName = "cart_"+user+"s"
     var querySelect = "SELECT product_id FROM "+dbName+" WHERE product_id = "+data.prodId
     models.sequelize.query(querySelect)
         .then(function(result){
@@ -193,11 +193,11 @@ router.post('/user/cart/amount/:id',jsonParser,function(req, res, next){
     next();
   }
 },function (req, res, next) {
-  var user = req.user.username;
+  var user = req.user.id;
   var data = req.body;
   var id = req.params.id;
   
-  var dbName = user+"_carts";
+  var dbName = "cart_"+user+"s";
 
   var query = "UPDATE "+dbName+"SET amount = "+data.amount+" WHERE product_id="+id
   models.sequelize.query(query)
@@ -222,9 +222,9 @@ router.get('/user/cart/:id',function(req, res, next){
   }
 
 },function(req, res, next){
-  var user = req.user.username;
+  var user = req.user.id;
   var id = req.params.id;
-  var dbName = user+"_carts"
+  var dbName = "cart_"+user+"s"
 
   var query = "SELECT * FROM "+dbName+" WHERE product_id="+id
   models.sequelize.query(query)
@@ -248,8 +248,8 @@ router.get('/user/cart',function(req, res, next){
     next();
   }
 },function(req, res, next){
-  var user = req.user.username;
-  var dbName = user+"_carts"
+  var user = req.user.id;
+  var dbName = "cart_"+user+"s"
   var query = "SELECT * FROM "+dbName+ " INNER JOIN products ON  "+dbName+ ".product_id=products.product_id"
   models.sequelize.query(query)
     .then(function(result){
@@ -272,9 +272,9 @@ router.delete('/user/cart/delete/:id',function(req, res, next) {
     next();
   }
 },function(req, res, next){
-  var user = req.user.username;
+  var user = req.user.id;
   var id = req.params.id
-  var dbName = user+"_carts"
+  var dbName = "cart_"+user+"s"
   var query = "DELETE FROM "+dbName+" WHERE product_id = "+id
   models.sequelize.query(query)
   .then(function(result){
