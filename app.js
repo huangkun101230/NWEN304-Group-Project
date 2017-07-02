@@ -8,10 +8,10 @@ var passport = require('passport');
 var flash = require('connect-flash');
 var models = require('./models');
 var bodyParser = require('body-parser');
-//var sslRedirect = require('heroku-ssl-redirect');
+var enforce = require('express-sslify');
 
 app.use(express.static('./public'));
-
+app.use(enforce.HTTPS({ trustProtoHeader: true }))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
