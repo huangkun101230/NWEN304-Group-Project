@@ -58,7 +58,7 @@ if (env === "dev") {
   app.use(function (req, res, next){
 
   });
-  //app.set('trust proxy', 1)
+  app.set('trust proxy', 1)
   app.use(session({
     secret: secret,
     resave: false,
