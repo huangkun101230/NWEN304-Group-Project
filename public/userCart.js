@@ -49,4 +49,45 @@ $(document).ready(function(e) {
         });
     });
 
+    //Search the product
+    $('#search a').click(function () {
+        var search_content=$('#search input').val();
+        $display_content = $('#display_content');
+        // window.alert(search_content);
+        $display_content.empty();
+        $display_content.append('<h3>Your search result:</h3>')
+        if(search_content !== '') {
+            // window.alert($search_content);
+            $.ajax({
+                url: url_add + 'search',
+                type: 'POST',
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify({product_name: search_content}),
+                success: function (products) {
+                    console.log("this is product"+products.price);
+                    $display_content.append(
+                        '<li class="products_list" id="'+products.product_id+'">'+
+                        '<img src="'+products.picture_dir+'" alt="'+products.product_name+'">'+
+                        '<span class="products_des">'+
+                        '<h2>'+products.product_name+'</h2>'+
+                        '<p>'+products.product_des+'</p>'+
+                        '<p>&#36; '+products.price+'</p>'+
+                        '<p>product id: '+products.product_id+'</p>'+
+                        '</span>'+
+                        '<span class="add_cart"></span>' +
+                        '</li>'
+                    );
+
+                },
+                error: function (error) {
+                    $display_content.append('<h3>This product is not found...</h3>');
+                    console.log("products not found..."+error);
+
+                }
+            });
+        }
+        $('#search input').val('');
+    });
+
 });
