@@ -113,7 +113,7 @@ module.exports = function(passport) {
 	},
 	function(accessToken, refreshToken, profile, done) {
 	    process.nextTick(function(){
-	    	models.users.findOne({'users.fbid': profile.id}, function(err, user){
+	    	models.users.findOne({fbid: profile.id}, function(err, user){
 	    		if(err)
 	    			return done(err);
 	    		if(user)
