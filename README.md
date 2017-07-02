@@ -1,6 +1,6 @@
 # nwen304-project3-team-sweet
 this holds an simple e-commerce website written in node + express + postgres which
-has a heroku deployment: [quiet-cove-52767.herokuapp.com](https://quiet-cove-52767.herokuapp.com/)
+has a heroku deployment: [quiet-cove-52767.herokuapp.com](https://quiet-cove-52767.herokuapp.com/) and the repo is [here](https://github.com/mrllama123/nwen304-project3-team-sweet)
 
 <!-- TOC -->
 
@@ -125,6 +125,16 @@ curl -X POST \
   -H 'content-type: application/json' \
   -H 'postman-token: 3fe472e3-5b39-fa46-d3a3-5ee2a10db124' \
   -d '{"prodId":1,"amount":1}'
+```
+
+search for a product:
+```shell
+curl -X POST \
+  http://localhost:8080/search \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H 'postman-token: 915dba11-0b28-315e-669d-f3bba1b3cc99' \
+  -d '{"product_name": "Unbranded Concrete Keyboard"}'
 ```
 
 
