@@ -42,26 +42,32 @@
         </div>
     </div>
 
-    <% for(var i=0; i < products.length; i++) { %>
-        <br>
-        <br>
-        <li class="products_list" id="<%- products[i].product_id -%>">
-            <img src="<%- products[i].picture_dir -%>" alt="<%- products[i].product_name -%>" height="150" width="200">
-            <span class="products_des">
-                <h2><%- products[i].product_name -%></h2>
-                <p>&#36; <%- products[i].price -%></p>
-                <p><%- products[i].product_des -%></p>
-                <p>&#36; <%- products[i].price -%></p>
-                <p>product id: <%- products[i].product_id -%></p>
-            </span>
-            <br>
-            <span class="add_cart">
-                <% if(login) {%>
-                    <button class="product_button" name="addToCart">Add to cart</button>
-                <% } %>
-            </span>
+    <div id="content">
+        <div id="page_heading"><h3>Welcome to The sweet shopping site</h3></div>
 
-        </li>
-    <% } %>
+        <ul id="display_content">
+            <% for(var i=0; i < products.length; i++) { %>
+                <br>
+                <br>
+                <li class="products_list" id="<%- products[i].product_id -%>">
+                    <img src="<%- products[i].picture_dir -%>" alt="<%- products[i].product_name -%>" height="150" width="200">
+                    <span class="products_des">
+                        <h2><%- products[i].product_name -%></h2>
+                        <p>&#36; <%- products[i].price -%></p>
+                        <p><%- products[i].product_des -%></p>
+                        <p>&#36; <%- products[i].price -%></p>
+                        <p>product id: <%- products[i].product_id -%></p>
+                    </span>
+                    <br>
+                    <span class="add_cart">
+                        <% if(login) {%>
+                            <button class="product_button" name="addToCart">Add to cart</button>
+                        <% } %>
+                    </span>
+
+                </li>
+            <% } %>
+        </ul>
+    </div>
     
 </body>
