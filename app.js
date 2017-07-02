@@ -17,6 +17,7 @@ app.use(express.static('./public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+
 app.set('view engine', 'ejs'); // set up ejs for templating
 
 require('./config/passport')(passport);
@@ -56,7 +57,12 @@ if (env === "dev") {
   //app.set(sslRedirect())
   app.use(enforce.HTTPS({ trustProtoHeader: true }))
   app.use(function (req, res, next){
-
+      if (req.headers['x-forwarded-proto'] != 'https') {
+        res.redirect(status, 'https://' + req.hostname + req.originalUrl);
+      }
+      else {
+        next();
+      }
   });
   app.set('trust proxy', 1)
   app.use(session({
@@ -66,7 +72,7 @@ if (env === "dev") {
     store: new SequelizeStore({
       db: models.sequelize
     }),
-    //proxy : true,
+    proxy : true,
     cookie: { 
       secure: true,
       maxAge: 24*60*60*1000,
