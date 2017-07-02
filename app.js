@@ -9,9 +9,11 @@ var flash = require('connect-flash');
 var models = require('./models');
 var bodyParser = require('body-parser');
 var enforce = require('express-sslify');
+var csv = require("fast-csv");
+
+
 
 app.use(express.static('./public'));
-app.use(enforce.HTTPS({ trustProtoHeader: true }))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -36,7 +38,7 @@ var SequelizeStore = require('connect-session-sequelize')(session.Store);
 var env = process.env.ENVIRONMENT || "dev"
 var secret = process.env.SESSION_SECRET || "ssshhhhh"
 
-if (env == "dev") {
+if (env === "dev") {
     app.use(session({
       secret: secret,
       resave: false,
@@ -52,15 +54,11 @@ if (env == "dev") {
     }));
 } else {
   //app.set(sslRedirect())
+  app.use(enforce.HTTPS({ trustProtoHeader: true }))
   app.use(function (req, res, next){
-      if (req.headers['x-forwarded-proto'] != 'https') {
-        res.redirect(status, 'https://' + req.hostname + req.originalUrl);
-      }
-      else {
-        next();
-      }
+
   });
-  app.set('trust proxy', 1)
+  //app.set('trust proxy', 1)
   app.use(session({
     secret: secret,
     resave: false,
@@ -68,7 +66,7 @@ if (env == "dev") {
     store: new SequelizeStore({
       db: models.sequelize
     }),
-    proxy : true,
+    //proxy : true,
     cookie: { 
       secure: true,
       maxAge: 24*60*60*1000,
@@ -92,7 +90,31 @@ models.sequelize.sync().then(function () {
   products.count().then(function(c){
     if (c == 0) {
       var rows = []
-      for (var index = 0; index < 50; index++) {
+
+/*      csv
+      .fromPath("./csv-files/apparel.csv")
+      .on("data", function(data){
+        
+        var row = {};
+        row['product_name'] = data[0];
+        if (data.length == 5) {
+            row['product_des'] = data[4];
+        } else {
+          row['product_des'] = faker.lorem.sentences();
+        }
+        row['price'] = faker.commerce.price();
+        row['in_stock'] = faker.random.number(); 
+        row['picture_dir'] = data[5];
+        rows.push(row);
+        
+      })
+      .on("end", function(){
+          products.bulkCreate(rows);  
+          
+      });*/
+     
+      
+      for (var index = 0; index < 20; index++) {
         var row = {};
         row['product_name'] = faker.commerce.productName();
         row['product_des'] =  faker.lorem.sentences();
@@ -101,7 +123,7 @@ models.sequelize.sync().then(function () {
         row['picture_dir'] = faker.image.image()
         rows.push(row);
       }
-      products.bulkCreate(rows);      
+      products.bulkCreate(rows);   
     }
   });
 
