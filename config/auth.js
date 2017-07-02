@@ -6,7 +6,7 @@ module.exports = {
     'facebookAuth' : {
 		'clientID': '675930815939700',
 		'clientSecret': '4b00bc00558f4ffb95a9c85f6395ea57',
-		// 'callbackURL': 'http://localhost:8080/auth/facebook/callback'
-		'callbackURL': 'https://www.getpostman.com/oauth2/callback'
+		'callbackURL': 'https://quiet-cove-52767.herokuapp.com/auth/facebook/callback'
+		//'callbackURL': 'https://www.getpostman.com/oauth2/callback'
 	}
 }
