@@ -29,7 +29,7 @@ $(document).ready(function(e) {
         });
     });
 
-    $('.del_cart ').find('.del_button').on('click',function(){
+    $('.del_cart ').find('.process_button').on('click',function(){
         var product_target = $(this).parents('li');
         var id = product_target.attr('id');
         $.ajax({
