@@ -143,7 +143,7 @@ module.exports = function(passport) {
 							return done(null,false,{message: "user was not created"});
 						} else{
 							//return done(null,newUser);
-							var dbName = username+"_cart" 
+							var dbName = "cart_"+newUser.id 
 							models.sequelize.define(dbName,{
 							id: {
 								allowNull: false,
