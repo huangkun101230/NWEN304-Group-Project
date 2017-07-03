@@ -127,14 +127,14 @@ curl -X POST \
   -d '{"prodId":1,"amount":1}'
 ```
 
-search for a product:
+search for a product put the product name in (product name) :
 ```shell
 curl -X POST \
   http://localhost:8080/search \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
   -H 'postman-token: 915dba11-0b28-315e-669d-f3bba1b3cc99' \
-  -d '{"product_name": "Unbranded Concrete Keyboard"}'
+  -d '{"product_name": "(product name)"}'
 ```
 
 
@@ -143,7 +143,7 @@ curl -X POST \
 ## users
 holds the password and username of each user 
 
-user_id SERIAL PRIMARY KEY NOT NULL | username TEXT | password TEXT NOT NULL | fbid TEXT NOT NULL | token TEXT NOT NULL | fbname TEXT NOT NULL
+id SERIAL PRIMARY KEY NOT NULL | username TEXT | password TEXT NOT NULL | fbid TEXT NOT NULL | token TEXT NOT NULL | fbname TEXT NOT NULL
 --- | --- | --- | --- | --- | ---
 
 
@@ -157,6 +157,6 @@ id SERIAL  PRIMARY KEY NOT NULL | product_id BIGINT | amount  BIGINT
 ## products 
 holds info about all the products that are in the store 
 
-| products_id SERIAL PRIMARY KEY NOT NULL | product_name TEXT NOT NULL | product_des TEXT NOT NULL | price TEXT | in_stock INTEGER | picture_dir TEXT | 
+| product_id SERIAL PRIMARY KEY NOT NULL | product_name TEXT NOT NULL | product_des TEXT NOT NULL | price TEXT | in_stock INTEGER | picture_dir TEXT | 
 --- | --- | --- | --- | --- | --- |
 
